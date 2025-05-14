@@ -13,8 +13,11 @@
 % Your abstract.
 % \end{abstract}
 
-\section{ProMPs \cite{paraschos_probabilistic_2013, paraschos_using_2018}}
+\tableofcontents
+
+\section{ProMPs}
 \subsection{Recap}
+From \cite{paraschos_probabilistic_2013, paraschos_using_2018}:
 \begin{itemize}
     \item $q_t$: joint angle over time
     \item $\dot{q}_t$: joint velocity over time
@@ -24,6 +27,7 @@
     \item $\bm{\Phi}_t = [\phi_t, \dot{\phi_t}]$: $n \times 2$ dimensional time-dependent basis matrix
     \item $z(t)$: monotonically increasing phase variable
     \item $\bm{\epsilon}_y \sim \mathcal{N}(\bm{0}, \bm{\Sigma}_y)$: zero-mean i.i.d. Gaussian noise
+    \item $p(\bm{w};\bm{\theta})$: prior over the weight vector $\bm{w}$, with parameters $\bm{\theta}$, assumed to be Gaussian
 \end{itemize}
 
 \begin{gather}
@@ -34,7 +38,7 @@
 p(\bm{\tau}|\bm{w}) = \prod_t \mathcal{N}\Big(\bm{y}_t|\bm{\Phi}^{\top}_{t}\bm{w}, \bm{\Sigma}_y \Big)\\
 p(\bm{\tau};\bm{\theta}) = \int p(\bm{\tau}|\bm{w}) \cdot p(\bm{w};\bm{\theta}) d\bm{w}\label{eq:HBM}
 \end{gather}
-Equation \ref{eq:HBM} is illustrated in Figure \ref{fig:HBM}.
+\Cref{eq:HBM} is illustrated in \Cref{fig:HBM}.
 
 \begin{figure}[htbp]
 \centering
@@ -90,12 +94,14 @@ with:
     \item $\bm{\Sigma}^\star_t$: accuracy of the desired observation
 \end{itemize}
 
-\begin{equation}
-p(\bm{w}|\bm{x}_t^\star) \propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big) \cdot p(\bm{w})\label{eq:prob-cond-new}
-\end{equation}
+Using Bayes rule: $P(A|B) = \frac{p(B|A) \cdot P(A)}{P(B)}$
+\begin{align}
+  p(\bm{w}|\bm{x}_t^\star) &= \frac{p(\bm{x}_t^\star|\bm{w}) \cdot p(\bm{w})}{p(\bm{x}_t^\star)} \\
+  p(\bm{w}|\bm{x}_t^\star) &\propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big) \cdot p(\bm{w})\label{eq:prob-cond-new}
+\end{align}
 
 \begin{align}
-& \textcolor{red}{\dots\text{ToDo expand}\dots}\\
+& \textcolor{magenta}{\dots\text{ToDo expand}\dots}\\
 \bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
 \bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
 \end{align}
@@ -103,7 +109,7 @@ p(\bm{w}|\bm{x}_t^\star) \propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\
 
 
 \section{Composition of MPs}
-
+\todo[inline]{ToDo}
 
 
 
