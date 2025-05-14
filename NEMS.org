@@ -1,0 +1,36 @@
+#+title: NEMS
+
+* Abstract (max 300 words)
+** Main topic:
+Building complex movements from primitive movements
+** Problem statement
+- Not all method can precisely follow the constraints
+- We first investigate how multiple movement primitive methods perform on conditioning on several constraints, like start position, final position, multiple via-points, etc.
+- We use a distance metric and rank them by how they can precisely pass through the constraints
+** We show on conceptual examples how each method compares
+** Investigate the composition of multiple primitive movements to build more complex movements out of syllable movements
+* Poster
+** Side by side comparison of each method
+- Math
+- Examples
+
+* Submission
+** Title
+# *** Evaluating and Composing Movement Primitives Under Constraint-Based Conditioning
+# *** Composition and Constraint Satisfaction in Movement Primitives: A Comparative Analysis
+*** Evaluation of Movement Primitive Methods for Constrained Motion
+*** Evaluation of Movement Primitive Methods for Constrained Motion Generation and Composition
+
+** Abstract
+# The generation of complex motor behaviors from simpler building blocks, known as movement primitives, is a fundamental problem in robotics and motor control.
+# A key challenge in this domain is the ability of different primitive-based methods to satisfy spatial and temporal constraints, such as specified start and end positions, as well as intermediate via-points. Despite their widespread use, not all movement primitive frameworks can reliably adhere to such constraints with high precision.
+
+# This study presents a systematic evaluation of several widely used movement primitive methods, analyzing their performance under multiple constraints, including start positions, end positions, and intermediate via-points. We quantify the accuracy with which each method conforms to the imposed constraints, and rank their performance across a variety of conditioning scenarios. This analysis highlights the trade-offs between accuracy, flexibility, and computational efficiency inherent in different approaches.
+
+# Beyond single-movement analysis, we investigate the principled composition of "syllables" primitives to generate more complex trajectories. We explore blending and stitching strategies to construct longer behaviors from previously learned primitives, analyzing how well each method supports seamless composition without sacrificing constraint satisfaction.
+
+# We evaluate the effectiveness of different composition strategies in maintaining constraint satisfaction while constructing extended motion sequences.
+
+The generation of complex motor behaviors through the composition of simpler building blocks, known as movement primitives, is a fundamental challenge in both robotics and motor control. A key difficulty lies in ensuring that primitive-based methods accurately satisfy spatial and temporal constraints, such as specified start and end positions, and intermediate via-points. Despite their widespread use, not all movement primitive frameworks can reliably adhere to such constraints with high precision.
+To address this issue, we present a comprehensive theoretical and empirical evaluation of several widely used movement primitive methods, analyzing their performance under multiple constraints, including start positions, end positions, and intermediate via-points. We quantify the accuracy with which each method conforms to the imposed constraints, and rank their performance across a variety of conditioning scenarios. This analysis highlights the trade-offs between accuracy, flexibility, and computational efficiency, offering a comparative basis for selecting suitable approaches in practice.
+Building upon this analysis of individual movements, we further investigate the principled composition of these primitives to generate more complex behavior. Specifically, we examine blending and stitching strategies to construct longer behaviors from previously learned primitives, analyzing how well each method supports seamless composition while maintaining constraint satisfaction. This extension from individual movements to composed behaviors provides crucial insights for implementing hierarchical motion generation systems in practical applications.
