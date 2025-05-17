@@ -94,10 +94,72 @@ The Hierarchical Bayesian Model used in ProMPs is illustrated in \Cref{fig:HBM}.
 \begin{align}
 p(\bm{y}_t; \bm{\theta}) &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot p(\bm{w}; \bm{\theta}) \; d\bm{w}\\
 &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot \mathcal{N}\Big(\bm{w}|\bm{\mu_w}, \bm{\Sigma_w} \Big) \; d\bm{w}\\
-&= \textcolor{blue}{ \int \mathcal{N}\Big( \bm{w}|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma_{w}} + \bm{\Sigma}_{y}  \Big) \; d\bm{w} \quad \text{(product of Gaussian densities)}}\\
-& \textcolor{magenta}{\dots\text{Missing development}\dots}\\
-&= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
+% &= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
 \end{align}
+
+From \citep{deisenroth2020mathematics}, we have the joint distribution:
+\begin{equation}
+  p(\bm{\mathrm{x}}_{a}, \bm{\mathrm{x}}_{b}) = \mathcal{N}\Bigg(
+  \begin{bmatrix}
+    \bm{\mu}_{a} \\
+    \bm{\mu}_{b} \\
+  \end{bmatrix},
+  \begin{bmatrix}
+    \bm{\Sigma}_{aa} & \bm{\Sigma}_{ab}  \\
+    \bm{\Sigma}_{ba} & \bm{\Sigma}_{bb}
+  \end{bmatrix}
+  \Bigg)
+\end{equation}
+
+and the marginal distribution $p(\bm{\mathrm{x}}_{a})$ of a joint Gaussian distribution $p(\bm{\mathrm{x}}_{a}, \bm{\mathrm{x}}_{b})$:
+\begin{equation}
+  p(\bm{\mathrm{x}}_{a}) = \int p(\bm{\mathrm{x}}_{a}, \bm{\mathrm{x}}_{b}) d \bm{\mathrm{x}}_{b} = \mathcal{N}( \bm{\mathrm{x}}_{a} | \bm{\mu}_{a}, \bm{\Sigma}_{aa})
+\end{equation}
+
+Since $\bm{y}_t$ and $\bm{w}$ are jointly Gaussian, we have:
+\begin{equation}
+  \begin{bmatrix}
+    \bm{y}_t \\
+    \bm{w}
+  \end{bmatrix} \sim \mathcal{N}\Bigg(
+  \begin{bmatrix}
+    \bm{\Psi}^\top_t \bm{\mu_w} \\
+    \bm{\mu_w} \\
+  \end{bmatrix},
+  \begin{bmatrix}
+    \mathrm{Cov}[\bm{y}_t, \bm{y}_t] & \mathrm{Cov}[\bm{y}_t, \bm{w}]  \\
+    \mathrm{Cov}[\bm{w}, \bm{y}_t] & \mathrm{Cov}[\bm{w}, \bm{w}]
+  \end{bmatrix}
+  \Bigg)
+\end{equation}
+\begin{align}
+  \mathrm{Cov}[\bm{y}_t, \bm{y}_t] &= \mathrm{Cov}[\bm{\Psi}^\top_t \bm{w} + \bm{\epsilon}]\\
+  &= \mathrm{Cov}[\bm{\Psi}^\top_t \bm{w}] + \mathrm{Cov}[\bm{\epsilon}]\\
+  &= \bm{\Psi}^\top_t\mathrm{Cov}[\bm{w}]\bm{\Psi}_t + \bm{\Sigma}_{y}\\
+    &= \bm{\Psi}^\top_t\bm{\Sigma_{w}}\bm{\Psi}_t + \bm{\Sigma}_{y}
+\end{align}
+
+\begin{equation}
+  \begin{bmatrix}
+    \bm{y}_t \\
+    \bm{w}
+  \end{bmatrix} \sim \mathcal{N}\Bigg(
+  \begin{bmatrix}
+    \bm{\Psi}^\top_t \bm{\mu_w} \\
+    \bm{\mu_w} \\
+  \end{bmatrix},
+  \begin{bmatrix}
+    \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y & \bm{\Psi}^\top_t \bm{\Sigma_w}  \\
+    \bm{\Sigma_w} \bm{\Psi}_t & \bm{\Sigma_w}
+  \end{bmatrix}
+  \Bigg)
+\end{equation}
+
+\begin{align}
+p(\bm{y}_t; \bm{\theta}) &= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
+\end{align}
+
+
 
 \subsection{Via-Points Modulation}
 
@@ -113,15 +175,14 @@ Using Bayes rule:
   p(\bm{w}|\bm{x}_t^\star) &\propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big) \cdot p(\bm{w})\label{eq:prob-cond-new}
 \end{align}
 
-From \citep{deisenroth2020mathematics, joram_soch_2025_14646799, bishop2023deep}, the parameters of a conditional multivariate Gaussian $p(\bm{x}|\bm{y}) = \mathcal{N}\big( \bm{\mu}_{x|y}, \bm{\Sigma}_{x|y} \big)$ are the following:
+From \citep{bishop2024learning}, the parameters of a conditional multivariate Gaussian $p(\bm{\mathrm{x}}_{a}|\bm{\mathrm{x}}_{b}) = \mathcal{N}\big( \bm{\mu}_{a|b}, \bm{\Sigma}_{a|b} \big)$ are the following:
 \begin{align}
-  % p(\bm{x}|\bm{y}) &= \mathcal{N}\big( \bm{\mu}_{x|y}, \bm{\Sigma}_{x|y} \big)\\
-  \bm{\mu}_{x|y} &= \bm{\mu}_{x} + \bm{\Sigma}_{xy}\bm{\Sigma}_{yy}^{-1}(\bm{y} - \bm{\mu}_{y})\\
-  \bm{\Sigma}_{x|y} &= \bm{\Sigma}_{xx} - \bm{\Sigma}_{xy}\bm{\Sigma}_{yy}^{-1}\bm{\Sigma}_{yx}
+  \bm{\mu}_{a|b} &= \bm{\mu}_{a} + \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}(\bm{\mathrm{x}}_{b} - \bm{\mu}_{b})\\
+  \bm{\Sigma}_{a|b} &= \bm{\Sigma}_{aa} - \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}\bm{\Sigma}_{ba}
 \end{align}
 
 \begin{align}
-& \textcolor{magenta}{\dots\text{ToDo expand}\dots}\\
+& \textcolor{magenta}{\dots\text{Missing development}\dots}\\
 \bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
 \bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
 \end{align}
