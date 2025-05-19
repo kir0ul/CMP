@@ -95,8 +95,53 @@ The Hierarchical Bayesian Model used in ProMPs is illustrated in \Cref{fig:HBM}.
 p(\bm{y}_t; \bm{\theta}) &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot p(\bm{w}; \bm{\theta}) \; d\bm{w}\\
 &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot \mathcal{N}\Big(\bm{w}|\bm{\mu_w}, \bm{\Sigma_w} \Big) \; d\bm{w}\\
 % &= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
+&= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)\label{eq:HBM}
+\end{align}
+See \Cref{proof:HBM} for the proof.
+
+
+\subsection{Via-Points Modulation}
+
+\begin{itemize}
+    \item $\bm{x}_t^\star = [\bm{y}_t^\star, \bm{\Sigma}^\star_t]$: desired observation
+    \item $\bm{y}^\star_t$: desired position and velocity vector at time $t$
+    \item $\bm{\Sigma}^\star_t$: accuracy of the desired observation
+\end{itemize}
+
+Using Bayes rule:
+\begin{align}
+  p(\bm{w}|\bm{x}_t^\star) &= \frac{p(\bm{x}_t^\star|\bm{w}) \cdot p(\bm{w})}{p(\bm{x}_t^\star)} \\
+  p(\bm{w}|\bm{x}_t^\star) &\propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big) \cdot \mathcal{N}(\bm{w}|\bm{\mu}_{w}, \bm{\Sigma}_{w})\label{eq:prob-cond-new}
 \end{align}
 
+\begin{align}
+\bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
+\bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
+\end{align}
+See \Cref{proof:conditioning} for the proof.
+
+
+\subsubsection{Do we actually get the desired mean by applying the conditioning update?}
+\begin{align}
+  \bm{\mu}_{\bm{y}_{t}}(\bm{y}_t^\star) &\stackrel{?}{=} \bm{\mu_{w}}^{[new]}(\bm{y}_t^\star)\\
+  \bm{\Psi}_t^\top \bm{\mu_{w}}(\bm{y}_t^\star) &\stackrel{?}{=} \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+  \end{align}
+\todo[inline]{ToDo}
+
+
+\section{Composition of MPs}
+
+
+
+
+\bibliographystyle{IEEEtranN}
+\bibliography{references}
+
+
+\appendix
+\section{Hierarchical Bayesian Model proof}
+
+\begin{proof}[Proof of \Cref{eq:HBM}]\label{proof:HBM}
 From \citep{deisenroth2020mathematics}, we have the joint distribution:
 \begin{equation}
   p(\bm{\mathrm{x}}_{a}, \bm{\mathrm{x}}_{b}) = \mathcal{N}\Bigg(
@@ -154,48 +199,22 @@ Since $\bm{y}_t$ and $\bm{w}$ are jointly Gaussian, we have:
   \end{bmatrix}
   \Bigg)
 \end{equation}
+\begin{equation}
+p(\bm{y}_t; \bm{\theta}) = \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
+\end{equation}
 
-\begin{align}
-p(\bm{y}_t; \bm{\theta}) &= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
-\end{align}
+\end{proof}
 
+\section{Via-Points conditioning proof}
 
-
-\subsection{Via-Points Modulation}
-
-\begin{itemize}
-    \item $\bm{x}_t^\star = [\bm{y}_t^\star, \bm{\Sigma}^\star_t]$: desired observation
-    \item $\bm{y}^\star_t$: desired position and velocity vector at time $t$
-    \item $\bm{\Sigma}^\star_t$: accuracy of the desired observation
-\end{itemize}
-
-Using Bayes rule:
-\begin{align}
-  p(\bm{w}|\bm{x}_t^\star) &= \frac{p(\bm{x}_t^\star|\bm{w}) \cdot p(\bm{w})}{p(\bm{x}_t^\star)} \\
-  p(\bm{w}|\bm{x}_t^\star) &\propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big) \cdot p(\bm{w})\label{eq:prob-cond-new}
-\end{align}
-
+\begin{proof}[Proof of \Cref{eq:mu-cond-new} and \Cref{eq:sigma-cond-new}]\label{proof:conditioning}
 From \citep{bishop2024learning}, the parameters of a conditional multivariate Gaussian $p(\bm{\mathrm{x}}_{a}|\bm{\mathrm{x}}_{b}) = \mathcal{N}\big( \bm{\mu}_{a|b}, \bm{\Sigma}_{a|b} \big)$ are the following:
 \begin{align}
   \bm{\mu}_{a|b} &= \bm{\mu}_{a} + \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}(\bm{\mathrm{x}}_{b} - \bm{\mu}_{b})\\
   \bm{\Sigma}_{a|b} &= \bm{\Sigma}_{aa} - \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}\bm{\Sigma}_{ba}
 \end{align}
+\todo[inline]{Missing developments}
+\end{proof}
 
-\begin{align}
-& \textcolor{magenta}{\dots\text{Missing development}\dots}\\
-\bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
-\bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
-\end{align}
-
-
-
-\section{Composition of MPs}
-\todo[inline]{ToDo}
-
-
-
-
-\bibliographystyle{IEEEtranN}
-\bibliography{references}
 
 \end{document}

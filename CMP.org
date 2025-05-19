@@ -228,3 +228,4 @@ Composition & - & - & - & - & \checkmark\\
 ** Show it doesn't work mathematically
 ** Metric of reaching the end point
 ** Multiple via points
+*** [?] Does it loose accuracy when increasing the number of via-points?
