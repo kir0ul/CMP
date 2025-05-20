@@ -35,7 +35,7 @@ From \citep{paraschos_probabilistic_2013, paraschos_using_2018}:
        \dot{q}_t
      \end{bmatrix} = \bm{\Phi}^{\top}_{t}\bm{w} + \bm{\epsilon}_y\\
 p(\bm{\tau}|\bm{w}) = \prod_t \mathcal{N}\Big(\bm{y}_t|\bm{\Phi}^{\top}_{t}\bm{w}, \bm{\Sigma}_y \Big)\\
-p(\bm{\tau};\bm{\theta}) = \int p(\bm{\tau}|\bm{w}) \cdot p(\bm{w};\bm{\theta}) d\bm{w}\label{eq:HBM}
+p(\bm{\tau};\bm{\theta}) = \int p(\bm{\tau}|\bm{w}) \cdot p(\bm{w};\bm{\theta}) d\bm{w}
 \end{gather}
 
 \subsection{Coupling between joints}
@@ -122,8 +122,8 @@ See \Cref{proof:conditioning} for the proof.
 
 \subsubsection{Do we actually get the desired mean by applying the conditioning update?}
 \begin{align}
-  \bm{\mu}_{\bm{y}_{t}}(\bm{y}_t^\star) &\stackrel{?}{=} \bm{\mu_{w}}^{[new]}(\bm{y}_t^\star)\\
-  \bm{\Psi}_t^\top \bm{\mu_{w}}(\bm{y}_t^\star) &\stackrel{?}{=} \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+  \bm{\mu_{w}}^{[new]}(t) &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\\
+                          &\stackrel{?}{=} \bm{y}_t^\star
   \end{align}
 \todo[inline]{ToDo}
 
