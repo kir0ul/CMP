@@ -128,8 +128,11 @@ See \Cref{proof:conditioning} for the proof.
 \todo[inline]{ToDo}
 
 
-\section{Composition of MPs}
+\subsubsection{Does the mean accuracy change if the number of via-points increase?}
 
+\section{Composition of MPs}
+\subsection{Blending}
+\subsection{Stitching}
 
 
 
@@ -239,6 +242,7 @@ We want the posterior $p(\bm{w}|\bm{x}_t^\star)$, knowing the likelihood $\bm{x}
 \end{equation}
 
 $\mathrm{Cov}[\bm{x}_t^{\star}, \bm{x}_t^{\star}]$ follows from \Cref{eq:cov_y_y}.
+
 \begin{align}
   \mathrm{Cov}[\bm{w}, \bm{x}_t^{\star}] &= \mathrm{Cov}[\bm{w}, \bm{\Psi}^\top_t\bm{w} + \bm{\epsilon}_y]\\
                                          &= \mathrm{Cov}[\bm{w}, \bm{\Psi}^\top_t\bm{w}] & ( \mathrm{Cov}[\bm{w}, \bm{\epsilon_y}] = 0 \text{ since } \bm{\epsilon_y} \text{ is independent of } \bm{w})\\
