@@ -94,7 +94,6 @@ The Hierarchical Bayesian Model used in ProMPs is illustrated in \Cref{fig:HBM}.
 \begin{align}
 p(\bm{y}_t; \bm{\theta}) &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot p(\bm{w}; \bm{\theta}) \; d\bm{w}\\
 &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot \mathcal{N}\Big(\bm{w}|\bm{\mu_w}, \bm{\Sigma_w} \Big) \; d\bm{w}\\
-% &= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
 &= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)\label{eq:HBM}
 \end{align}
 See \Cref{proof:HBM} for the proof.
@@ -115,8 +114,8 @@ Using Bayes rule:
 \end{align}
 
 \begin{align}
-\bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
-\bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
+\bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
+\bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star +  \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
 \end{align}
 See \Cref{proof:conditioning} for the proof.
 
@@ -153,7 +152,7 @@ From \citep{deisenroth2020mathematics}, we have the joint distribution:
     \bm{\Sigma}_{aa} & \bm{\Sigma}_{ab}  \\
     \bm{\Sigma}_{ba} & \bm{\Sigma}_{bb}
   \end{bmatrix}
-  \Bigg)
+  \Bigg)\label{eq:joint-distrib}
 \end{equation}
 
 and the marginal distribution $p(\bm{\mathrm{x}}_{a})$ of a joint Gaussian distribution $p(\bm{\mathrm{x}}_{a}, \bm{\mathrm{x}}_{b})$:
@@ -168,7 +167,7 @@ Since $\bm{y}_t$ and $\bm{w}$ are jointly Gaussian, we have:
     \bm{w}
   \end{bmatrix} \sim \mathcal{N}\Bigg(
   \begin{bmatrix}
-    \bm{\Psi}^\top_t \bm{\mu_w} \\
+    \bm{\mu}_{\bm{y}_{t}} \\
     \bm{\mu_w} \\
   \end{bmatrix},
   \begin{bmatrix}
@@ -178,10 +177,17 @@ Since $\bm{y}_t$ and $\bm{w}$ are jointly Gaussian, we have:
   \Bigg)
 \end{equation}
 \begin{align}
-  \mathrm{Cov}[\bm{y}_t, \bm{y}_t] &= \mathrm{Cov}[\bm{\Psi}^\top_t \bm{w} + \bm{\epsilon}]\\
-  &= \mathrm{Cov}[\bm{\Psi}^\top_t \bm{w}] + \mathrm{Cov}[\bm{\epsilon}]\\
+  \bm{\mu}_{\bm{y}_{t}} &= \E[\bm{y}_{t}]\\
+                        &= \E[\bm{\Psi}^\top_t \bm{w} + \bm{\epsilon}_y]\\
+                        &= \bm{\Psi}^\top_t \E[\bm{w}] + \E[\bm{\epsilon}_y]\\
+                        &= \bm{\Psi}^\top_t \bm{\mu_w} + 0\\
+                        &= \bm{\Psi}^\top_t \bm{\mu_w}
+\end{align}
+\begin{align}
+  \mathrm{Cov}[\bm{y}_t, \bm{y}_t] &= \mathrm{Cov}[\bm{\Psi}^\top_t \bm{w} + \bm{\epsilon}_y]\\
+  &= \mathrm{Cov}[\bm{\Psi}^\top_t \bm{w}] + \mathrm{Cov}[\bm{\epsilon}_y]\\
   &= \bm{\Psi}^\top_t\mathrm{Cov}[\bm{w}]\bm{\Psi}_t + \bm{\Sigma}_{y}\\
-    &= \bm{\Psi}^\top_t\bm{\Sigma_{w}}\bm{\Psi}_t + \bm{\Sigma}_{y}
+    &= \bm{\Psi}^\top_t\bm{\Sigma_{w}}\bm{\Psi}_t + \bm{\Sigma}_{y}\label{eq:cov_y_y}
 \end{align}
 
 \begin{equation}
@@ -208,12 +214,65 @@ p(\bm{y}_t; \bm{\theta}) = \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_
 \section{Via-Points conditioning proof}
 
 \begin{proof}[Proof of \Cref{eq:mu-cond-new} and \Cref{eq:sigma-cond-new}]\label{proof:conditioning}
-From \citep{bishop2024learning}, the parameters of a conditional multivariate Gaussian $p(\bm{\mathrm{x}}_{a}|\bm{\mathrm{x}}_{b}) = \mathcal{N}\big( \bm{\mu}_{a|b}, \bm{\Sigma}_{a|b} \big)$ are the following:
+  With the joint distribution $p(\bm{\mathrm{x}}_{a}, \bm{\mathrm{x}}_{b})$ in \Cref{eq:joint-distrib}, and from \citep{bishop2024learning}, the parameters of a conditional multivariate Gaussian $p(\bm{\mathrm{x}}_{a}|\bm{\mathrm{x}}_{b}) = \mathcal{N}\big( \bm{\mu}_{a|b}, \bm{\Sigma}_{a|b} \big)$ are the following:
 \begin{align}
-  \bm{\mu}_{a|b} &= \bm{\mu}_{a} + \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}(\bm{\mathrm{x}}_{b} - \bm{\mu}_{b})\\
-  \bm{\Sigma}_{a|b} &= \bm{\Sigma}_{aa} - \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}\bm{\Sigma}_{ba}
+  \bm{\mu}_{a|b} &= \bm{\mu}_{a} + \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}(\bm{\mathrm{x}}_{b} - \bm{\mu}_{b})\label{eq:cond-multi-gauss-mu}\\
+  \bm{\Sigma}_{a|b} &= \bm{\Sigma}_{aa} - \bm{\Sigma}_{ab}\bm{\Sigma}_{bb}^{-1}\bm{\Sigma}_{ba}\label{eq:cond-multi-gauss-sigma}
 \end{align}
-\todo[inline]{Missing developments}
+
+We want the posterior $p(\bm{w}|\bm{x}_t^\star)$, knowing the likelihood $\bm{x}_t^\star|\bm{w} \sim \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big)$, and the prior $\bm{w} \sim \mathcal{N}(\bm{w}|\bm{\mu}_{w}, \bm{\Sigma}_{w})$.
+
+\begin{equation}
+  \begin{bmatrix}
+    \bm{w} \\
+    \bm{x}_t^{\star}
+  \end{bmatrix} \sim \mathcal{N}\Bigg(
+  \begin{bmatrix}
+    \bm{\mu_w} \\
+    \bm{\Psi}^\top_t \bm{\mu_w}\\
+  \end{bmatrix},
+  \begin{bmatrix}
+    \mathrm{Cov}[\bm{w}, \bm{w}] &  \mathrm{Cov}[\bm{w}, \bm{x}_t^{\star}] \\
+    \mathrm{Cov}[\bm{x}_t^{\star}, \bm{w}] & \mathrm{Cov}[\bm{x}_t^{\star}, \bm{x}_t^{\star}]
+  \end{bmatrix}
+  \Bigg)
+\end{equation}
+
+$\mathrm{Cov}[\bm{x}_t^{\star}, \bm{x}_t^{\star}]$ follows from \Cref{eq:cov_y_y}.
+\begin{align}
+  \mathrm{Cov}[\bm{w}, \bm{x}_t^{\star}] &= \mathrm{Cov}[\bm{w}, \bm{\Psi}^\top_t\bm{w} + \bm{\epsilon}_y]\\
+                                         &= \mathrm{Cov}[\bm{w}, \bm{\Psi}^\top_t\bm{w}] & ( \mathrm{Cov}[\bm{w}, \bm{\epsilon_y}] = 0 \text{ since } \bm{\epsilon_y} \text{ is independent of } \bm{w})\\
+                                         &= \E[(\bm{w} - \bm{\mu_{w}})(\bm{\Psi}^\top_t\bm{w} - \bm{\Psi}^\top_t\bm{\mu_{w}})^{\top}]\\
+                                         &= \E[(\bm{w} - \bm{\mu_{w}})(\bm{w} - \bm{\mu_{w}})^{\top}\bm{\Psi}_t]\\
+                                         &= \mathrm{Cov}[\bm{w}, \bm{w}] \cdot \bm{\Psi}_t\\
+                                         &= \bm{\Sigma_{w}} \bm{\Psi}_t
+\end{align}
+
+\begin{equation}
+  \begin{bmatrix}
+    \bm{w} \\
+    \bm{x}_t^{\star}
+  \end{bmatrix} \sim \mathcal{N}\Bigg(
+  \begin{bmatrix}
+    \bm{\mu_w} \\
+    \bm{\Psi}^\top_t \bm{\mu_w}\\
+  \end{bmatrix},
+  \begin{bmatrix}
+     \bm{\Sigma_w} & \bm{\Sigma_{w}} \bm{\Psi}_t  \\
+    \bm{\Psi}^\top_t\bm{\Sigma_w} & \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}^\star_t
+  \end{bmatrix}
+  \Bigg)
+\end{equation}
+
+Using \Cref{eq:cond-multi-gauss-mu} we get:
+\begin{equation}
+\bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+\end{equation}
+
+Using \Cref{eq:cond-multi-gauss-sigma} we get:
+\begin{equation}
+\bm{\Sigma}_{\bm{w}|\bm{x}_t^\star} = \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star +  \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}
+\end{equation}
 \end{proof}
 
 
