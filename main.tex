@@ -22,12 +22,22 @@ From \citep{paraschos_probabilistic_2013, paraschos_using_2018}:
     \item $q_t$: joint angle over time
     \item $\dot{q}_t$: joint velocity over time
     \item $\bm{\tau} = \{q_t\}_{t=0\dots T}$: trajectory
-    \item $\bm{w}$: weight vector of a single trajectory
+    \item $\bm{w}$: weight vector of a single trajectory $[n \times 1]$
     \item $\phi_t$: basis function
+    \item $n$: number of basis functions
     \item $\bm{\Phi}_t = [\phi_t, \dot{\phi_t}]$: $n \times 2$ dimensional time-dependent basis matrix
     \item $z(t)$: monotonically increasing phase variable
     \item $\bm{\epsilon}_y \sim \mathcal{N}(\bm{0}, \bm{\Sigma}_y)$: zero-mean i.i.d. Gaussian noise
 \end{itemize}
+
+\begin{equation}
+  \bm{\Phi}_t =
+  \begin{bmatrix}
+    \phi_1 & \dot{\phi_1}\\
+    \vdots & \vdots\\
+    \phi_n & \dot{\phi_n}
+  \end{bmatrix}
+\end{equation}
 
 \begin{gather}
 \bm{y}_t = \begin{bmatrix}
@@ -59,8 +69,8 @@ p(\bm{y}_t|\bm{w}) = \mathcal{N}\Bigg(
 
 with:
 \begin{itemize}
-    \item $\bm{w}=[\bm{w}^\top_1, \dots, \bm{w}^\top_n]^\top$: combined weight vector
-    \item $\bm{\Phi}_t$: block-diagonal basis matrix containing the basis functions and their derivatives for each dimension
+    \item $\bm{w}=[\bm{w}^\top_1, \dots, \bm{w}^\top_n]^\top$: combined weight vector $[n \times n]$
+    \item $\bm{\Psi}_t$: block-diagonal basis matrix containing the basis functions and their derivatives for each dimension
     \item $\bm{y}_{i,t} = [q_{i,t}, \dot{q}_{i,t}]^\top$: joint angle and velocity for the $i^{\text{th}}$ joint
 \end{itemize}
 
@@ -121,14 +131,17 @@ See \Cref{proof:conditioning} for the proof.
 
 
 \subsubsection{Do we actually get the desired mean by applying the conditioning update?}
+\begin{equation}
+  \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+                          % &\stackrel{?}{=} \bm{y}_t^\star
+  \end{equation}
+  Let us set the observed covariance $\bm{\Sigma}_t^\star$ to $0$ so as to have perfect accuracy around our observed position.
 \begin{align}
-  \bm{\mu_{w}}^{[new]}(t) &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\\
-                          &\stackrel{?}{=} \bm{y}_t^\star
+  \bm{\mu}_{\bm{w}|\bm{x}_t^\star} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big( \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\\
+                                   &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big( \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\mu}_{\bm{y}_{t}}) \quad \text{(which does not simplify further)}\\
+                                   &\neq \bm{y}_t^\star
   \end{align}
-\todo[inline]{ToDo}
 
-
-\subsubsection{Does the mean accuracy change if the number of via-points increase?}
 
 \section{Composition of MPs}
 \subsection{Blending}
