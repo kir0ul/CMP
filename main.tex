@@ -132,14 +132,14 @@ See \Cref{proof:conditioning} for the proof.
 
 \subsubsection{Do we actually get the desired mean by applying the conditioning update?}
 \begin{equation}
-  \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+  \E[\bm{y}_{t}|\bm{x}_{t}^{\star}] = \bm{\mu}_{\bm{y}_{t}|\bm{x}_{t}} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu_w} + \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
                           % &\stackrel{?}{=} \bm{y}_t^\star
   \end{equation}
-  Let us set the observed covariance $\bm{\Sigma}_t^\star$ to $0$ so as to have perfect accuracy around our observed position.
+  We set the observed covariance $\bm{\Sigma}_t^\star$ to $0$ so as to have perfect accuracy around our observed position.
 \begin{align}
-  \bm{\mu}_{\bm{w}|\bm{x}_t^\star} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big( \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\\
-                                   &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big( \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\mu}_{\bm{y}_{t}}) \quad \text{(which does not simplify further)}\\
-                                   &\neq \bm{y}_t^\star
+  \bm{\Psi}_t^\top \bm{\mu}_{\bm{w}|\bm{x}_t^\star} &= \bm{\Psi}_t^\top \bm{\mu_w} + \cancel{\bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t} \Big( \cancel{\bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t} \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\\
+                                   &= \cancel{\bm{\Psi}_t^\top \bm{\mu_w}} + \bm{y}_t^\star - \cancel{\bm{\Psi}_t^\top \bm{\mu_w}}\\
+                                   &= \bm{y}_t^\star
   \end{align}
 
   \subsubsection{Multi via-points}
