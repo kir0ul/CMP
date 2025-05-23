@@ -134,7 +134,7 @@ See \Cref{proof:conditioning} for the proof.
 
 \begin{proof}[Proof that the posterior mean equals the observed mean]
 \begin{equation}
-  \E[\bm{y}_{t}|\bm{x}_{t}^{\star}] = \bm{\mu}_{\bm{y}_{t}|\bm{x}_{t}} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu_w} + \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+  \E[\bm{y}_{t}|\bm{x}_{t}^{\star}] = \bm{\mu}_{\bm{y}_{t}|\bm{x}_{t}^{\star}} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu_w} + \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
                           % &\stackrel{?}{=} \bm{y}_t^\star
   \end{equation}
   We set the observed covariance $\bm{\Sigma}_t^\star$ to $0$ so as to have perfect accuracy around our observed position.
