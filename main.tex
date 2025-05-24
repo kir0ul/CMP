@@ -150,11 +150,56 @@ See \Cref{proof:conditioning} for the proof.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.5\linewidth]{fig/2-via-points.png}
-  \caption{Example of ProMP with two via points.}
+  \caption{Example of ProMP with two via-points.}
   \label{fig:multi-via-pts}
 \end{figure}
 
-\todo[inline]{ToDo: Two points conditional update derivation}
+\begin{enumerate}
+\item First via-point conditioning update with the observed via-point $\bm{x}_{t_{1}}^\star = [\bm{y}_{t_{1}}^\star, \bm{\Sigma}^\star_{t_{1}}]$:
+\begin{align}
+\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big(\bm{\Sigma}_{t_{1}}^\star + \bm{\Psi}_{t_1}^\top \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big)^{-1} (\bm{y}_{t_{1}}^\star - \bm{\Psi}_{t_1}^\top \bm{\mu_w})\\
+\bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big(\bm{\Sigma}_{t_{1}}^\star +  \bm{\Psi}_{t_1}^\top \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big)^{-1} \bm{\Psi}_{t_1}^\top \bm{\Sigma_w}
+\end{align}
+
+\item For the second via-point conditioning update with the observed via-point $\bm{x}_{t_{2}}^\star = [\bm{y}_{t_{2}}^\star, \bm{\Sigma}^\star_{t_{2}}]$, the prior is the posterior from the first via-point, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star})$, the observation model is $\bm{y}_{t_{2}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_2}^\top \bm{w}, \bm{\Sigma}_{t_{2}}^\star)$, and the update becomes:
+\begin{align}
+\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^{\star}, \bm{x}_{t_{2}}^\star} &= \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star} + \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big(\bm{\Sigma}_{t_{2}}^\star + \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big)^{-1} (\bm{y}_{t_{2}}^\star - \bm{\Psi}_{t_2}^\top \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star})\\
+\bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^{\star}, \bm{x}_{t_{2}}^\star} &= \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star} - \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big(\bm{\Sigma}_{t_{2}}^\star +  \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big)^{-1} \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}
+\end{align}
+
+\item For the $k^{\text{th}}$ via-point conditioning update with the observed via-point $\bm{x}_{t_{k}}^\star = [\bm{y}_{t_{k}}^\star, \bm{\Sigma}^\star_{t_{k}}]$, the prior is the posterior after conditioning on the previous $k-1$ via-points, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})$, the observation model is $\bm{y}_{t_{k}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_k}^\top \bm{w}, \bm{\Sigma}_{t_{k}}^\star)$, and the update becomes:
+\begin{align}
+\begin{split}
+\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k}}^\star} &= \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star} \\&\quad+ \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big(\bm{\Sigma}_{t_{k}}^\star + \bm{\Psi}_{t_k}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big)^{-1} (\bm{y}_{t_{k}}^\star - \bm{\Psi}_{t_k}^\top \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})
+\end{split}\\
+\begin{split}
+\bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k}}^\star} &= \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star} \\&\quad- \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big(\bm{\Sigma}_{t_{k}}^\star +  \bm{\Psi}_{t_k}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big)^{-1} \bm{\Psi}_{t_k}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}
+\end{split}
+\end{align}
+\end{enumerate}
+
+\paragraph{Alternative Batch Formulation}
+Instead of iterative updates, we could condition on all via-points simultaneously by stacking the observations:
+\begin{equation}
+  \bm{y}^{\star} =
+  \begin{bmatrix}
+    \bm{y}^{\star}_{t_{1}}\\
+    \vdots \\
+    \bm{y}^{\star}_{t_{k}}
+  \end{bmatrix}, \quad
+  \bm{\Psi} =
+  \begin{bmatrix}
+    \bm{\Psi}_{t_{1}}\\
+    \vdots \\
+    \bm{\Psi}_{t_{k}}
+  \end{bmatrix}, \quad
+  \bm{\Sigma}^\star = \diag(\bm{\Sigma}^\star_{t_{1}}, \dots, \bm{\Sigma}^\star_{t_{k}})
+\end{equation}
+
+\begin{align}
+\bm{\mu}_{\bm{w}|\{\bm{x}_{t_k}^\star\}_{k=1}^K} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi} \Big(\bm{\Sigma}^\star + \bm{\Psi}^\top \bm{\Sigma_w}\bm{\Psi} \Big)^{-1} (\bm{y}^\star - \bm{\Psi}^\top \bm{\mu_w})\\
+\bm{\Sigma}_{\bm{w}|\{\bm{x}_{t_k}^\star\}_{k=1}^K} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi} \Big(\bm{\Sigma}^\star + \bm{\Psi}^\top \bm{\Sigma_w}\bm{\Psi} \Big)^{-1} \bm{\Psi}^\top \bm{\Sigma_w}
+\end{align}
 
 
 \section{Composition of MPs}
