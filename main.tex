@@ -155,19 +155,19 @@ See \Cref{proof:conditioning} for the proof.
 \end{figure}
 
 \begin{enumerate}
-\item First via-point conditioning update with the observed via-point $\bm{x}_{t_{1}}^\star = [\bm{y}_{t_{1}}^\star, \bm{\Sigma}^\star_{t_{1}}]$:
+\item For the first via-point conditioning update with the observed via-point $\bm{x}_{t_{1}}^\star = [\bm{y}_{t_{1}}^\star, \bm{\Sigma}^\star_{t_{1}}]$, we can directly apply \Cref{eq:mu-cond-new,eq:sigma-cond-new}, with $\bm{\Psi}_{t_1}$ the observation matrix at time $t_{1}$:
 \begin{align}
 \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big(\bm{\Sigma}_{t_{1}}^\star + \bm{\Psi}_{t_1}^\top \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big)^{-1} (\bm{y}_{t_{1}}^\star - \bm{\Psi}_{t_1}^\top \bm{\mu_w})\\
 \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big(\bm{\Sigma}_{t_{1}}^\star +  \bm{\Psi}_{t_1}^\top \bm{\Sigma_w}\bm{\Psi}_{t_1} \Big)^{-1} \bm{\Psi}_{t_1}^\top \bm{\Sigma_w}
 \end{align}
 
-\item For the second via-point conditioning update with the observed via-point $\bm{x}_{t_{2}}^\star = [\bm{y}_{t_{2}}^\star, \bm{\Sigma}^\star_{t_{2}}]$, the prior is the posterior from the first via-point, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star})$, the observation model is $\bm{y}_{t_{2}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_2}^\top \bm{w}, \bm{\Sigma}_{t_{2}}^\star)$, and the update becomes:
+\item For the second via-point conditioning update with the observed via-point $\bm{x}_{t_{2}}^\star = [\bm{y}_{t_{2}}^\star, \bm{\Sigma}^\star_{t_{2}}]$, the prior is the posterior from the first via-point, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star})$, the likelihood is $\bm{y}_{t_{2}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_2}^\top \bm{w}, \bm{\Sigma}_{t_{2}}^\star)$, with $\bm{\Psi}_{t_2}$ the observation matrix at time $t_{2}$, and the posterior update becomes:
 \begin{align}
 \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^{\star}, \bm{x}_{t_{2}}^\star} &= \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star} + \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big(\bm{\Sigma}_{t_{2}}^\star + \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big)^{-1} (\bm{y}_{t_{2}}^\star - \bm{\Psi}_{t_2}^\top \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star})\\
 \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^{\star}, \bm{x}_{t_{2}}^\star} &= \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star} - \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big(\bm{\Sigma}_{t_{2}}^\star +  \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big)^{-1} \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}
 \end{align}
 
-\item For the $k^{\text{th}}$ via-point conditioning update with the observed via-point $\bm{x}_{t_{k}}^\star = [\bm{y}_{t_{k}}^\star, \bm{\Sigma}^\star_{t_{k}}]$, the prior is the posterior after conditioning on the previous $k-1$ via-points, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})$, the observation model is $\bm{y}_{t_{k}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_k}^\top \bm{w}, \bm{\Sigma}_{t_{k}}^\star)$, and the update becomes:
+\item For the $k^{\text{th}}$ via-point conditioning update with the observed via-point $\bm{x}_{t_{k}}^\star = [\bm{y}_{t_{k}}^\star, \bm{\Sigma}^\star_{t_{k}}]$, the prior is the posterior after conditioning on the previous $k-1$ via-points, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})$, the likelihood is $\bm{y}_{t_{k}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_k}^\top \bm{w}, \bm{\Sigma}_{t_{k}}^\star)$, with $\bm{\Psi}_{t_k}$ the observation matrix at time $t_{k}$, and the posterior update becomes:
 \begin{align}
 \begin{split}
 \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k}}^\star} &= \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star} \\&\quad+ \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big(\bm{\Sigma}_{t_{k}}^\star + \bm{\Psi}_{t_k}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big)^{-1} (\bm{y}_{t_{k}}^\star - \bm{\Psi}_{t_k}^\top \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})
@@ -205,9 +205,16 @@ Instead of iterative updates, we could condition on all via-points simultaneousl
 \section{Composition of MPs}
 \subsection{Blending}
 \subsection{Stitching}
+See \Cref{fig:stitching}.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\linewidth]{fig/stitching.png}
+  \caption{Stitching three ProMPs.}
+  \label{fig:stitching}
+\end{figure}
 
 
-
+\newpage
 \bibliographystyle{IEEEtranN}
 \bibliography{references}
 
