@@ -167,7 +167,7 @@ See \Cref{proof:conditioning} for the proof.
 \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^{\star}, \bm{x}_{t_{2}}^\star} &= \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star} - \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big(\bm{\Sigma}_{t_{2}}^\star +  \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}\bm{\Psi}_{t_2} \Big)^{-1} \bm{\Psi}_{t_2}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star}
 \end{align}
 
-\item For the $k^{\text{th}}$ via-point conditioning update with the observed via-point $\bm{x}_{t_{k}}^\star = [\bm{y}_{t_{k}}^\star, \bm{\Sigma}^\star_{t_{k}}]$, the prior is the posterior after conditioning on the previous $k-1$ via-points, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}, \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})$, the likelihood is $\bm{y}_{t_{k}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_k}^\top \bm{w}, \bm{\Sigma}_{t_{k}}^\star)$, with $\bm{\Psi}_{t_k}$ the observation matrix at time $t_{k}$, and the posterior update becomes:
+\item For the $k^{\text{th}}$ via-point conditioning update with the observed via-point $\bm{x}_{t_{k}}^\star = [\bm{y}_{t_{k}}^\star, \bm{\Sigma}^\star_{t_{k}}]$, the prior is the posterior after conditioning on the previous $k-1$ via-points, \ie{} $\bm{w} \sim \mathcal{N}(\bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}, \allowbreak \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})$, the likelihood is $\bm{y}_{t_{k}}^\star \sim \mathcal{N}(\bm{\Psi}_{t_k}^\top \bm{w}, \bm{\Sigma}_{t_{k}}^\star)$, with $\bm{\Psi}_{t_k}$ the observation matrix at time $t_{k}$, and the posterior update becomes:
 \begin{align}
 \begin{split}
 \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k}}^\star} &= \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star} \\&\quad+ \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big(\bm{\Sigma}_{t_{k}}^\star + \bm{\Psi}_{t_k}^\top \bm{\Sigma}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star}\bm{\Psi}_{t_k} \Big)^{-1} (\bm{y}_{t_{k}}^\star - \bm{\Psi}_{t_k}^\top \bm{\mu}_{\bm{w}|\bm{x}_{t_{1}}^\star, \dots, \bm{x}_{t_{k-1}}^\star})
@@ -214,7 +214,8 @@ See \Cref{fig:stitching}.
 \end{figure}
 
 
-\newpage
+% \newpage
+\FloatBarrier
 \bibliographystyle{IEEEtranN}
 \bibliography{references}
 
