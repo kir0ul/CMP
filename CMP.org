@@ -224,8 +224,3 @@ Composition & - & - & - & - & \checkmark\\
 #+end_export
 
 
-* TODO COMMENT Show you can constraint on via-points or not
-** TODO Show if it works mathematically
-** Metric of reaching the end point
-** Multiple via points
-*** [?] Does it loose accuracy when increasing the number of via-points?
