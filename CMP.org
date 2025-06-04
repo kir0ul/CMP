@@ -1,0 +1,226 @@
+#+title: CMP
+#+subtitle: Composition of Movement Primitives
+#+author: Andrea Pierré \\
+# #+author: ~andrea_pierre@student.uml.edu~
+#+OPTIONS: num:t toc:t
+#+LATEX_COMPILER: lualatex
+#+LaTeX_CLASS_OPTIONS: [11pt, letterpaper]
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \usepackage{amsmath}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+MACRO: RED @@latex:{\color{red}@@$1@@latex:}@@
+#+MACRO: TODO @@latex:{\color{red}@@TODO@@latex:}@@
+#+MACRO: IE @@latex:{\ie{}}@@
+#+LaTeX_HEADER: \usepackage[all]{foreign}
+# #+LaTeX_HEADER: \usepackage{geometry}
+# #+LaTeX_HEADER: \geometry{top=2cm,bottom=2cm,left=2cm,right=2cm}
+# #+LaTeX_HEADER: \usepackage[ruled, lined, linesnumbered]{algorithm2e}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
+#+LATEX_HEADER: \usepackage{caption}
+#+LATEX_HEADER: \usepackage{mismath}
+#+LATEX_HEADER: \usepackage{bm}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{fit, positioning}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{booktabs}
+
+#+begin_src elisp :exports none
+(defun my-org-latex-format-headline-function
+    (todo todo-type priority text tags _info)
+  "Default format function for a headline.
+See `org-latex-format-headline-function' for details."
+  (concat
+   (and todo (format "{\\bfseries\\sffamily\\color{%s} %s} "
+                     (pcase todo-type
+                       ('todo "orange")
+                       ('done "green"))
+                     todo))
+   (and priority (format "\\framebox{\\#%c} " priority))
+   text
+   (and tags
+    (format "\\hfill{}\\textsc{%s}"
+        (mapconcat #'org-latex--protect-text tags ":")))))
+
+(setq org-latex-format-headline-function 'my-org-latex-format-headline-function)
+#+end_src
+
+#+RESULTS:
+: my-org-latex-format-headline-function
+
+
+* ProMPs
+** Recap
+- $q_t$: joint angle over time
+- $\dot{q}_t$: joint velocity over time
+- $\bm{\tau} = \{q_t\}_{t=0\dots T}$: trajectory
+- $\bm{w}$: weight vector of a single trajectory
+- $\phi_t$: basis function
+- $\bm{\Phi}_t = [\phi_t, \dot{\phi_t}]$: $n \times 2$ dimensional time-dependent basis matrix
+- $z(t)$: monotonically increasing phase variable
+- $\bm{\epsilon}_y \sim \mathcal{N}(\bm{0}, \bm{\Sigma}_y)$: zero-mean i.i.d. Gaussian noise
+
+#+begin_export latex
+\begin{gather}
+\bm{y}_t = \begin{bmatrix}
+       q_t \\[0.3em]
+       \dot{q}_t
+     \end{bmatrix} = \bm{\Phi}^{\top}_{t}\bm{w} + \bm{\epsilon}_y\\
+p(\bm{\tau}|\bm{w}) = \prod_t \mathcal{N}\Big(\bm{y}_t|\bm{\Phi}^{\top}_{t}\bm{w}, \bm{\Sigma}_y \Big)\\
+p(\bm{\tau};\bm{\theta}) = \int p(\bm{\tau}|\bm{w}) \cdot p(\bm{w};\bm{\theta}) d\bm{w}\label{eq:HBM}
+\end{gather}
+Equation \ref{eq:HBM} is illustrated in Figure \ref{fig:HBM}.
+#+end_export
+
+#+begin_export latex
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, minimum size = 10mm, thick, draw =black!80, node distance = 16mm]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+  \node[circle, draw=black!100, fill = black!10] (theta) [label=above:$\bm{\theta}$] { };
+  \node[main] (w) [right=of theta,label=above:$p(\bm{w};\bm{\theta})$] {$\bm{w}$};
+  \node[main] (y) [right=of w,label=above:$p(\bm{y}_t|\bm{w})$] {$\bm{y}_t$};
+  \path (theta) edge [connect] (w)
+		(w) edge [connect] (y);
+  \node[rectangle, inner sep=1.5mm, fit= (y),label=below:{$t=1 \dots T$}] (ghost) {};
+  \node[rectangle, rounded corners=0.2cm, inner sep=4.4mm,draw=black!100, fit= (y) (ghost)] {};
+\end{tikzpicture}
+\caption{Hierarchical Bayesian model used in ProMPs.}
+\label{fig:HBM}
+\end{figure}
+#+end_export
+
+** Coupling between joints
+#+begin_export latex
+\begin{equation}
+p(\bm{y}_t|\bm{w}) = \mathcal{N}\Bigg(
+        \begin{bmatrix}
+                \bm{y}_{1,t} \\
+                \vdots\\
+                \bm{y}_{d,t} \\
+        \end{bmatrix}
+        \Bigg|
+        \begin{bmatrix}
+                \bm{\Phi}^{\top}_{t} & \cdots & \bm{0} \\
+                \vdots &\ddots & \vdots\\
+                \bm{0} & \cdots & \bm{\Phi}^{\top}_{t} \\
+        \end{bmatrix}
+        \bm{w}, \bm{\Sigma}_y
+\Bigg) = \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}_t\bm{w},\bm{\Sigma}_y \Big)
+\end{equation}
+#+end_export
+with:
+- $\bm{w}=[\bm{w}^\top_1, \dots, \bm{w}^\top_n]^\top$: combined weight vector
+- $\bm{\Phi}_t$: block-diagonal basis matrix containing the basis functions and their derivatives for each dimension
+- $\bm{y}_{i,t} = [q_{i,t}, \dot{q}_{i,t}]^\top$: joint angle and velocity for the $i^{\text{th}}$ joint
+
+#+begin_export latex
+\begin{align}
+p(\bm{y}_t; \bm{\theta}) &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot p(\bm{w}; \bm{\theta})\\
+&= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot \mathcal{N}\Big(\bm{w}|\bm{\mu_w}, \bm{\Sigma_w} \Big) d\bm{w}\\
+& \textcolor{red}{\dots\text{ToDo expand}\dots}\\
+&= \mathcal{N}\Big( \bm{y}_t | \bm{\Psi}^\top_t \bm{\mu_w}, \bm{\Psi}^\top_t \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y \Big)
+\end{align}
+#+end_export
+
+** Via-Points Modulation
+- $\bm{x}_t^\star = [\bm{y}_t^\star, \bm{\Sigma}^\star_t]$: desired observation
+- $\bm{y}^\star_t$: desired position and velocity vector at time $t$
+- $\bm{\Sigma}^\star_t$: accuracy of the desired observation
+
+#+begin_export latex
+\begin{equation}
+p(\bm{w}|\bm{x}_t^\star) \propto \mathcal{N}\Big( \bm{y}_t^\star | \bm{\Psi}_t^\top\bm{w}, \bm{\Sigma}^\star_t \Big) \cdot p(\bm{w})\label{eq:prob-cond-new}
+\end{equation}
+#+end_export
+
+#+begin_export latex
+\begin{align}
+& \textcolor{red}{\dots\text{ToDo expand}\dots}\\
+\bm{\mu_w}^{[new]} &= \bm{\mu_w} + \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})\label{eq:mu-cond-new}\\
+\bm{\Sigma_w}^{[new]} &= \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_y^\star \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}\label{eq:sigma-cond-new}
+\end{align}
+#+end_export
+
+** TODO COMMENT Blending of MP
+* Gaussian Mixture Models recap
+#+begin_export latex
+\begin{equation}
+p(\bm{x}|\bm{\theta}) = \sum_{k=1}^K \pi_k p_k(\bm{x})
+\end{equation}
+#+end_export
+- $p_k$: $k\text{th}$ mixture component
+- $\pi_k$: mixture weights with $0 \leq \pi_k \leq 1$ and $\sum_{k=1}^K \pi_k = 1$
+
+#+begin_export latex
+\begin{equation}
+p(\bm{x}) = \sum_{k=1}^K \pi_k \mathcal{N}(\bm{x}|\bm{\mu}_k, \bm{\Sigma}_k)
+\end{equation}
+#+end_export
+
+* Composition of MPs
+
+From Figure [[schema]], we can compose a set of MPs by "stitching" them using the following mechanisms:
+1. choosing appropriate via-points between each MP. One strategy is to define the via-point as the average between the ending MP and the starting one.
+2. generating the MP using Equations $(\ref{eq:prob-cond-new})$, $(\ref{eq:mu-cond-new})$ and $(\ref{eq:sigma-cond-new})$, from $z(t_{ini}) = \frac{i}{k}$ to $z(t_{end}) = \frac{i+1}{k}$.
+
+#+ATTR_LaTeX: :width 0.9\textwidth :placement [htbp]
+#+CAPTION: How to compose several ProMPs. Here $K = 3$, and $y_A = \frac{\mu_{1,t_A} + \mu_{2,t_A}}{2}; \quad y_B = \frac{\mu_{2,t_B} + \mu_{3,t_B}}{2}$.
+#+NAME: schema
+[[file:fig/schema.png]]
+
+#+begin_src elisp :exports none
+(setq venv-location "/home/kir0ul/Projects/CMP")
+(venv-workon ".venv")
+#+end_src
+
+#+ATTR_LaTeX: :placement [htbp]
+#+CAPTION: How to compose several ProMPs. Here $K = 3$, and $x_A = \frac{\mu_{1,t_A} + \mu_{2,t_A}}{2}; \quad x_B = \frac{\mu_{2,t_B} + \mu_{3,t_B}}{2}$.
+#+name: via-plot
+#+begin_src python :exports none :results output
+import matplotlib.pyplot as plt
+
+data = pd.read_csv("housing.csv", index_col=0)
+X = data.drop(columns="medv")
+y = data.medv
+#+end_src
+
+Proposal on how to choose the via-points:
+$$y_k = \frac{\mu_{k,t_{end}} + \mu_{k+1,t_{ini}}}{2}$$
+$$\bm{y}_k = [\mu_{x_k}, \mu_{y_k}, \mu_{z_k},\dots]^\top$$
+#+begin_export latex
+\[\bm{Y}_k =
+ \begin{bmatrix}
+       \mu_{x_1} & \mu_{y_1} & \mu_{z_1} & \cdots\\
+       \vdots & \ddots &  & \vdots\\
+       \mu_{x_k} & \mu_{y_k} & \mu_{z_k} & \cdots\\
+     \end{bmatrix}
+\]
+#+end_export
+
+
+A comparison of features available in MPs frameworks is available in Table [[feat-table]].
+#+NAME: feat-table
+#+begin_export latex
+\begin{table}[htbp]
+\begin{tabular}{lccccc}
+\toprule
+& DMP & ProMP & GMM & KMP & \textbf{CMP}\\
+\midrule
+Probabilistic & - & \checkmark & \checkmark & \checkmark & \checkmark\\
+Via-point & - & \checkmark & - & \checkmark & \checkmark\\
+End-point & \checkmark & \checkmark & - & \checkmark & \checkmark\\
+Extrapolation & \checkmark & - & - & \checkmark & \textcolor{red}{Check KMP}\\
+High-dimensional inputs & - & - & \checkmark & \checkmark & \textcolor{red}{Check KMP}\\
+Composition & - & - & - & - & \checkmark\\
+\bottomrule
+\end{tabular}
+\caption{Comparison of features available for each Movements Primitives frameworks.}
+\label{feat-table}
+\end{table}
+#+end_export
+
+
