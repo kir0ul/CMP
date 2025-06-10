@@ -202,6 +202,65 @@ Instead of iterative updates, we could condition on all via-points simultaneousl
 \end{align}
 
 
+\section{Gaussian mixture modeling (GMM)/Gaussian mixture regression (GMR) recap}
+\subsection{Gaussian mixture modeling (GMM)}
+\begin{itemize}
+  \item $\pi_{k}$: mixture weights
+  \item $\bm{\theta} := \{\bm{\mu}_{k}, \bm{\Sigma}_{k}, \pi_{k}: k=1, \dots, K\}$: collection of all parameters of the model
+  \item $r_{nk}$: responsibility of the $k^{\text{th}}$ mixture component for the $n^{\text{th}}$ data point
+  \item $N$: number of data points
+  \item $N_{k} := \sum^{N}_{n=1} r_{nk}$: total responsibility of the $k^{\text{th}}$ mixture component for the entire dataset
+\end{itemize}
+\begin{gather}
+  p(\bm{x}|\bm{\theta}) = \sum^{K}_{k=1} \pi_{k}  \mathcal{N}(\bm{x}|\bm{\mu}_{k}, \bm{\Sigma}_{k})\\
+  0 \leq \pi_{k} \leq 1, \quad \sum^{K}_{k=1} \pi_{k} = 1\\
+  r_{nk} := \frac{\pi_{k}  \mathcal{N}(\bm{x}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k})}{\sum^{K}_{j=1} \pi_{j}  \mathcal{N}(\bm{x}_{n}|\bm{\mu}_{j}, \bm{\Sigma}_{j})}
+\end{gather}
+Update of the GMM means:
+\begin{equation}
+  \bm{\mu}_{k}^{new} = \frac{\sum_{n=1}^{N}r_{nk}\bm{x}_{n}}{\sum_{n=1}^{N}r_{nk}}
+\end{equation}
+Update of the GMM covariances:
+\begin{equation}
+  \bm{\Sigma}_{k}^{new} = \frac{1}{N_{k}} \sum^{N}_{n=1} r_{nk} (\bm{x}_{n} - \bm{\mu}_{k})(\bm{x}_{n} - \bm{\mu}_{k})^{\top}
+\end{equation}
+Update of the GMM mixture weights:
+\begin{equation}
+  \pi_{k}^{new} = \frac{N_{k}}{N}, \quad k=1, \dots, K
+\end{equation}
+
+
+\begin{algorithm}[htbp]
+\caption{\textsc{Expectation Maximization (EM) algorithm}}
+\label{algo:EM}
+\DontPrintSemicolon
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKwFunction{KwPrint}{Print}
+\SetKwProg{Func}{Function}{}{end}
+\SetKw{KwLet}{let}
+
+% \Input{Graph $G$}
+% \Input{Weights $w$}
+% \Output{A $n \times n$ matrix $D$ of shortest paths}
+% \BlankLine
+
+\begin{enumerate}
+  \item Initialize $\bm{\mu}_{k}$, $\bm{\Sigma}_{k}$, $\pi_{k}$
+  \item \emph{E-step}: Evaluate responsibilities $r_{nk}$ for every data point $\bm{x}_{n}$ using current parameters $\bm{\mu}_{k}$, $\bm{\Sigma}_{k}$, $\pi_{k}$:
+        \begin{equation}
+          r_{nk} = \frac{\pi_{k}  \mathcal{N}(\bm{x}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k})}{\sum^{K}_{j=1} \pi_{j}  \mathcal{N}(\bm{x}_{n}|\bm{\mu}_{j}, \bm{\Sigma}_{j})}
+        \end{equation}
+  \item \emph{M-step}: Re-estimate parameters $\bm{\mu}_{k}$, $\bm{\Sigma}_{k}$, $\pi_{k}$ using the current responsibilities $r_{nk}$ (from E-step):
+        \begin{align}
+          \bm{\mu}_{k} &= \frac{1}{N_{k}} \sum_{n=1}^{N}r_{nk}\bm{x}_{n}\\
+          \bm{\Sigma}_{k} &= \frac{1}{N_{k}} \sum^{N}_{n=1} r_{nk} (\bm{x}_{n} - \bm{\mu}_{k})(\bm{x}_{n} - \bm{\mu}_{k})^{\top}\\
+          \pi_{k} &= \frac{N_{k}}{N}
+        \end{align}
+\end{enumerate}
+\end{algorithm}
+
+
 \section{Composition of MPs}
 \subsection{Stitching}
 See \Cref{fig:stitching}.
