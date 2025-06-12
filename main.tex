@@ -203,7 +203,7 @@ Instead of iterative updates, we could condition on all via-points simultaneousl
 
 
 \section{Gaussian mixture modeling (GMM)/Gaussian mixture regression (GMR) recap}
-\subsection{Gaussian mixture modeling (GMM)}
+\subsection{Gaussian Mixture Modeling (GMM)}
 \begin{itemize}
   \item $\pi_{k}$: mixture weights
   \item $\bm{\theta} := \{\bm{\mu}_{k}, \bm{\Sigma}_{k}, \pi_{k}: k=1, \dots, K\}$: collection of all parameters of the model
@@ -259,6 +259,48 @@ Update of the GMM mixture weights:
         \end{align}
 \end{enumerate}
 \end{algorithm}
+
+\subsection{Gaussian Mixture Regression (GMR)}
+Requires to add a series of timesteps $t = (t_{1}, \dots, t_{j}, \dots, t_{m})$ to divide each demonstration path evenly, and the points of each path can be re-written as $[(t_1, p_1), ..., (t_j, p_j), ..., (t_m, p_m)]$, so that each path has the same number of points for better alignment between demonstrations.
+
+\begin{itemize}
+  \item $p_{j}$: position of a constructive point from demonstration, $j=1, \dots, m$
+  \item $m$: total number of points in all the demonstrations
+\end{itemize}
+Joint probability $\mathcal{P}(t, \bm{x})$ learned with GMM:
+\begin{gather}
+  \mathcal{P}(t_{j}, x_{j}) = \sum^{K}_{i=1} \pi_{i} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})\\
+  \bm{\mu}_{i} =
+  \begin{bmatrix}
+    \bm{\mu}_{it} \\
+    \bm{\mu}_{ix}
+  \end{bmatrix}, \quad
+  \bm{\Sigma}_{i} =
+  \begin{bmatrix}
+    \bm{\Sigma}_{itt} & \bm{\Sigma}_{itx}\\
+    \bm{\Sigma}_{ixt} & \bm{\Sigma}_{ixx}
+  \end{bmatrix}\\
+\end{gather}
+\begin{align}
+  m_{i}(t_{j}) &= \bm{\mu}_{ix} + \bm{\Sigma}_{ixt} \cdot \bm{\Sigma}_{itt}^{-1} \cdot (t_{j} - \bm{\mu}_{it})\\
+  cov_{i} &= \bm{\Sigma}_{ixx} - \bm{\Sigma}_{ixt} \cdot \bm{\Sigma}_{itt}^{-1} \cdot \bm{\Sigma}_{itx}
+\end{align}
+
+Marginal probability $P(t_{j})$:
+\begin{equation}
+  P(t_{j}) = \int P(t_{j}, x_{j})dx = \sum_{i=1}^{K} \pi_{i} \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})
+\end{equation}
+Retrieve the conditional probability $\mathcal{P}(\bm{x}|t)$ with GMR for each timestep:
+\begin{align}
+  P(x_{j}|t_{j}; m_{i}(t_{j}), cov_{i}) &= \frac{P(t_{j}, x_{j})}{P(t_{j})}\\
+  &= \frac{\sum^{K}_{i=1} \textcolor[rgb]{0,0.5,1}{\pi_{i}} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \textcolor[rgb]{0,0.5,1}{\mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})}}{\textcolor[rgb]{0,0.5,1}{\sum_{i=1}^{K} \pi_{i} \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})}}\\
+  &= \sum_{i=1}^{K} \textcolor[rgb]{0,0.5,1}{r_{nk}} \cdot \mathcal{N}_{i}(x_{j}|t_{j}; m_{i}(t_{j}), cov_{i})
+\end{align}
+Regression function (\Cref{eq:GMR:mean}) and conditional variance (\Cref{eq:GMR:var}):
+\begin{align}
+  m(x) &= \E(x_{j}|t_{j}) = \sum_{i=1}^{K} r_{nk} \cdot m_{i}(t_{j})\label{eq:GMR:mean}\\
+  var(\hat{y}) &= \sum_{j=1}^{K} r_{nk} \cdot cov_{i}\label{eq:GMR:var}
+\end{align}
 
 
 \section{Composition of MPs}
