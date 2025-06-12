@@ -15,7 +15,8 @@ EM algo?
 Is it possible to update the equations to get one single multivariate Gaussian?
 * NO Blending?
 [[file:fig/schema-blending.png]]
-* Mixture model?
 * Using Gaussian Process instead of hierarchical Bayesian model to have a single multivariate Gaussian?
 - [[https://www.jmlr.org/papers/v23/21-1472.html][Jump Gaussian Process Model for Estimating Piecewise Continuous Regression Functions]]
 - [[https://doi.org/10.48550/arXiv.2301.08789][Active Learning of Piecewise Gaussian Process Surrogates]]
+* TODO Mixture of ProMPs \to Multivariate Gaussian joint proba with time and ratio of clusters
+* Kernel that favors features we want in robotics, e.g. smoothness, curvature, symmetry, etc.
