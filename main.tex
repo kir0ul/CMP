@@ -262,7 +262,7 @@ Update of the GMM mixture weights:
 
 
 \begin{algorithm}[htbp]
-\caption{\textsc{Expectation Maximization (EM) algorithm}}
+\caption{\textsc{Expectation Maximization (EM)} algorithm for a Gaussian mixture model}
 \label{algo:EM}
 \DontPrintSemicolon
 \SetKwInOut{Input}{Input}
@@ -271,24 +271,40 @@ Update of the GMM mixture weights:
 \SetKwProg{Func}{Function}{}{end}
 \SetKw{KwLet}{let}
 
-% \Input{Graph $G$}
-% \Input{Weights $w$}
-% \Output{A $n \times n$ matrix $D$ of shortest paths}
-% \BlankLine
+\Input{Initial model parameters $\{\bm{\mu}_{k}\}$, $\{\bm{\Sigma}_{k}\}$, $\{\pi_{k}\}$}
+\Input{Data set $\{\bm{\mathrm{x}}_{1}, \dots, \bm{\mathrm{x}}_{N}\}$}
+\Output{Final model parameters $\{\bm{\mu}_{k}\}$, $\{\bm{\Sigma}_{k}\}$, $\{\pi_{k}\}$}
+\BlankLine
 
-\begin{enumerate}
-  \item Initialize $\bm{\mu}_{k}$, $\bm{\Sigma}_{k}$, $\pi_{k}$
-  \item \emph{E-step}: Evaluate responsibilities $r_{nk}$ for every data point $\bm{x}_{n}$ using current parameters $\bm{\mu}_{k}$, $\bm{\Sigma}_{k}$, $\pi_{k}$:
-        \begin{equation}
-          r_{nk} = \frac{\pi_{k}  \mathcal{N}(\bm{x}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k})}{\sum^{K}_{j=1} \pi_{j}  \mathcal{N}(\bm{x}_{n}|\bm{\mu}_{j}, \bm{\Sigma}_{j})}
-        \end{equation}
-  \item \emph{M-step}: Re-estimate parameters $\bm{\mu}_{k}$, $\bm{\Sigma}_{k}$, $\pi_{k}$ using the current responsibilities $r_{nk}$ (from E-step):
-        \begin{align}
-          \bm{\mu}_{k} &= \frac{1}{N_{k}} \sum_{n=1}^{N}r_{nk}\bm{x}_{n}\\
-          \bm{\Sigma}_{k} &= \frac{1}{N_{k}} \sum^{N}_{n=1} r_{nk} (\bm{x}_{n} - \bm{\mu}_{k})(\bm{x}_{n} - \bm{\mu}_{k})^{\top}\\
-          \pi_{k} &= \frac{N_{k}}{N}
-        \end{align}
-\end{enumerate}
+\Repeat{convergence}{
+  \BlankLine
+  \tcp{E-step}
+  \For{$n \in \{1, \dots, N\}$}{
+    \For{$k \in \{1, \dots, K\}$}{
+      \begin{flalign*}
+        &r_{nk} \gets \frac{\pi_{k}  \mathcal{N}(\bm{\mathrm{x}}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k})}{\sum^{K}_{j=1} \pi_{j}  \mathcal{N}(\bm{\mathrm{x}}_{n}|\bm{\mu}_{j}, \bm{\Sigma}_{j})}&
+      \end{flalign*}
+    }
+  }
+
+  \BlankLine
+  \tcp{M-step}
+  \For{$k \in \{1, \dots, K\}$}{
+      \begin{flalign*}
+        N_{k} &= \sum_{n=1}^{N}r_{nk}&\\
+        \bm{\mu}_{k} &= \frac{1}{N_{k}} \sum_{n=1}^{N}r_{nk}\bm{\mathrm{x}}_{n}&\\
+        \bm{\Sigma}_{k} &= \frac{1}{N_{k}} \sum^{N}_{n=1} r_{nk} (\bm{\mathrm{x}}_{n} - \bm{\mu}_{k})(\bm{\mathrm{x}}_{n} - \bm{\mu}_{k})^{\top}&\\
+        \pi_{k} &= \frac{N_{k}}{N}&
+      \end{flalign*}
+  }
+
+  \BlankLine
+  \tcp{Log likelihood}%
+      \begin{flalign*}%
+        &\mathcal{L} \gets \sum^{N}_{n=1} \ln \Bigg\{\sum^{K}_{k=1} \pi_{k}  \mathcal{N}(\bm{\mathrm{x}}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k}) \Bigg\}&
+      \end{flalign*}
+}
+\Return{$\{\bm{\mu}_{k}\}$, $\{\bm{\Sigma}_{k}\}$, $\{\pi_{k}\}$}
 \end{algorithm}
 
 \subsection{Gaussian Mixture Regression (GMR)}
