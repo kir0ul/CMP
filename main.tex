@@ -18,17 +18,23 @@
 \section{ProMPs}
 \subsection{Recap}
 From \citep{paraschos_probabilistic_2013, paraschos_using_2018}:
-\begin{itemize}
-    \item $q_t$: joint angle over time
-    \item $\dot{q}_t$: joint velocity over time
-    \item $\bm{\tau} = \{q_t\}_{t=0\dots T}$: trajectory
-    \item $\bm{w}$: weight vector of a single trajectory $[n \times 1]$
-    \item $\phi_t$: basis function
-    \item $n$: number of basis functions
-    \item $\bm{\Phi}_t = [\phi_t, \dot{\phi_t}]$: $n \times 2$ dimensional time-dependent basis matrix
-    \item $z(t)$: monotonically increasing phase variable
-    \item $\bm{\epsilon}_y \sim \mathcal{N}(\bm{0}, \bm{\Sigma}_y)$: zero-mean i.i.d. Gaussian noise
-\end{itemize}
+\begin{table}
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $q_t$ & joint angle over time\\
+    $\dot{q}_t$ & joint velocity over time\\
+    $\bm{\tau} = \{q_t\}_{t=0\dots T}$ & trajectory\\
+    $\bm{w}$ & weight vector of a single trajectory $[n \times 1]$\\
+    $\phi_t$ & basis function\\
+    $n$ & number of basis functions\\
+    $\bm{\Phi}_t = [\phi_t, \dot{\phi_t}]$ & $n \times 2$ dimensional time-dependent basis matrix\\
+    $z(t)$ & monotonically increasing phase variable\\
+    $\bm{\epsilon}_y \sim \mathcal{N}(\bm{0}, \bm{\Sigma}_y)$ & zero-mean i.i.d. Gaussian noise\\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \begin{equation}
   \bm{\Phi}_t =
@@ -68,11 +74,17 @@ p(\bm{y}_t|\bm{w}) = \mathcal{N}\Bigg(
 \end{equation}
 
 with:
-\begin{itemize}
-    \item $\bm{w}=[\bm{w}^\top_1, \dots, \bm{w}^\top_n]^\top$: combined weight vector $[n \times n]$
-    \item $\bm{\Psi}_t$: block-diagonal basis matrix containing the basis functions and their derivatives for each dimension
-    \item $\bm{y}_{i,t} = [q_{i,t}, \dot{q}_{i,t}]^\top$: joint angle and velocity for the $i^{\text{th}}$ joint
-\end{itemize}
+\begin{table}[h]
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $\bm{w}=[\bm{w}^\top_1, \dots, \bm{w}^\top_n]^\top$ & combined weight vector $[n \times n]$\\
+     $\bm{\Psi}_t$ & block-diagonal basis matrix containing the basis functions and\\&their derivatives for each dimension\\
+     $\bm{y}_{i,t} = [q_{i,t}, \dot{q}_{i,t}]^\top$ & joint angle and velocity for the $i^{\text{th}}$ joint\\
+     \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{Hierarchical Bayesian Model}
 
@@ -96,10 +108,16 @@ The Hierarchical Bayesian Model used in ProMPs is illustrated in \Cref{fig:HBM}.
 \label{fig:HBM}
 \end{figure}
 
-\begin{itemize}
-  \item $\bm{\theta} = \{\bm{\mu}_{w}, \bm{\Sigma}_{w}\}$
-  \item $p(\bm{w};\bm{\theta}) = \mathcal{N}(\bm{w}|\bm{\mu}_{w}, \bm{\Sigma}_{w})$: prior over the weight vector $\bm{w}$, with parameters $\bm{\theta}$, assumed to be Gaussian
-\end{itemize}
+\begin{table}
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $\bm{\theta} = \{\bm{\mu}_{w}, \bm{\Sigma}_{w}\}$ & parameters\\
+    $p(\bm{w};\bm{\theta}) = \mathcal{N}(\bm{w}|\bm{\mu}_{w}, \bm{\Sigma}_{w})$ & prior over the weight vector $\bm{w}$, with parameters $\bm{\theta}$, assumed to be Gaussian\\
+     \bottomrule
+  \end{tabular}
+\end{table}
 
 \begin{align}
 p(\bm{y}_t; \bm{\theta}) &= \int \mathcal{N}\Big(\bm{y}_t|\bm{\Psi}^\top_t \bm{w}, \bm{\Sigma}_y \Big) \cdot p(\bm{w}; \bm{\theta}) \; d\bm{w}\\
@@ -111,11 +129,17 @@ See \Cref{proof:HBM} for the proof.
 
 \subsection{Via-Points Modulation}
 
-\begin{itemize}
-    \item $\bm{x}_t^\star = [\bm{y}_t^\star, \bm{\Sigma}^\star_t]$: desired observation
-    \item $\bm{y}^\star_t$: desired position and velocity vector at time $t$
-    \item $\bm{\Sigma}^\star_t$: accuracy of the desired observation
-\end{itemize}
+\begin{table}
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $\bm{x}_t^\star = [\bm{y}_t^\star, \bm{\Sigma}^\star_t]$ & desired observation\\
+     $\bm{y}^\star_t$ & desired position and velocity vector at time $t$\\
+     $\bm{\Sigma}^\star_t$ & accuracy of the desired observation\\
+      \bottomrule
+  \end{tabular}
+\end{table}
 
 Using Bayes rule:
 \begin{align}
@@ -204,13 +228,20 @@ Instead of iterative updates, we could condition on all via-points simultaneousl
 
 \section{Gaussian mixture modeling (GMM)/Gaussian mixture regression (GMR) recap}
 \subsection{Gaussian Mixture Modeling (GMM)}
-\begin{itemize}
-  \item $\pi_{k}$: mixture weights
-  \item $\bm{\theta} := \{\bm{\mu}_{k}, \bm{\Sigma}_{k}, \pi_{k}: k=1, \dots, K\}$: collection of all parameters of the model
-  \item $r_{nk}$: responsibility of the $k^{\text{th}}$ mixture component for the $n^{\text{th}}$ data point
-  \item $N$: number of data points
-  \item $N_{k} := \sum^{N}_{n=1} r_{nk}$: total responsibility of the $k^{\text{th}}$ mixture component for the entire dataset
-\end{itemize}
+\begin{table}
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $\pi_{k}$ & mixture weights\\
+     $\bm{\theta} := \{\bm{\mu}_{k}, \bm{\Sigma}_{k}, \pi_{k}: k=1, \dots, K\}$ & collection of all parameters of the model\\
+     $r_{nk}$ & responsibility of the $k^{\text{th}}$ mixture component for the $n^{\text{th}}$ data point\\
+     $N$ & number of data points\\
+     $N_{k} := \sum^{N}_{n=1} r_{nk}$ & total responsibility of the $k^{\text{th}}$ mixture component for the entire dataset\\
+       \bottomrule
+  \end{tabular}
+\end{table}
+
 \begin{gather}
   p(\bm{x}|\bm{\theta}) = \sum^{K}_{k=1} \pi_{k}  \mathcal{N}(\bm{x}|\bm{\mu}_{k}, \bm{\Sigma}_{k})\\
   0 \leq \pi_{k} \leq 1, \quad \sum^{K}_{k=1} \pi_{k} = 1\\
@@ -263,10 +294,17 @@ Update of the GMM mixture weights:
 \subsection{Gaussian Mixture Regression (GMR)}
 Requires to add a series of timesteps $t = (t_{1}, \dots, t_{j}, \dots, t_{m})$ to divide each demonstration path evenly, and the points of each path can be re-written as $[(t_1, p_1), ..., (t_j, p_j), ..., (t_m, p_m)]$, so that each path has the same number of points for better alignment between demonstrations.
 
-\begin{itemize}
-  \item $p_{j}$: position of a constructive point from demonstration, $j=1, \dots, m$
-  \item $m$: total number of points in all the demonstrations
-\end{itemize}
+\begin{table}
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $p_{j}$ & position of a constructive point from demonstration, $j=1, \dots, m$\\
+     $m$ & total number of points in all the demonstrations\\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
 Joint probability $\mathcal{P}(t, \bm{x})$ learned with GMM:
 \begin{gather}
   \mathcal{P}(t_{j}, x_{j}) = \sum^{K}_{i=1} \pi_{i} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})\\
@@ -299,13 +337,13 @@ Retrieve the conditional probability $\mathcal{P}(\bm{x}|t)$ with GMR for each t
 Regression function (\Cref{eq:GMR:mean}) and conditional variance (\Cref{eq:GMR:var}):
 \begin{align}
   m(x) &= \E(x_{j}|t_{j}) = \sum_{i=1}^{K} r_{nk} \cdot m_{i}(t_{j})\label{eq:GMR:mean}\\
-  var(\hat{y}) &= \sum_{j=1}^{K} r_{nk} \cdot cov_{i}\label{eq:GMR:var}
+  var(x) &= \sum_{j=1}^{K} r_{nk} \cdot cov_{i}\label{eq:GMR:var}
 \end{align}
 
 
 \section{Composition of MPs}
 \subsection{Stitching}
-See \Cref{fig:stitching}.
+The main issue with stitching is the smoothness of the mean and covariance between ProMPs, see \Cref{fig:stitching}.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.5\linewidth]{fig/stitching.png}
