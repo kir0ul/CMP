@@ -331,7 +331,7 @@ During the training phase we learn the joint probability $p(\bm{x}_{t}^{I}, \bm{
   p(\bm{x}_{t}^{I}, \bm{x}_{t}^{O}) &=  \sum_{k=1}^{K}\pi_{k} \mathcal{N}_{k}(\bm{x}_{t}^{I}, \bm{x}_{t}^{O}|\bm{\mu}_{k}, \bm{\Sigma}_{k})\\
   % &= \sum^{K}_{i=1} \pi_{i} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})\\
   &=  \sum_{k=1}^{K}\pi_{k} p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I}) \cdot p(\bm{x}_{t}^{I})\\
-  &=  \sum_{k=1}^{K}\pi_{k} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{\mu}_{k}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})
+  &=  \sum_{k=1}^{K}\pi_{k} \mathcal{N}_{k}(\bm{x}_{t}^{O}|\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})
 \end{align}
 
 \begin{gather}
@@ -352,20 +352,20 @@ During the training phase we learn the joint probability $p(\bm{x}_{t}^{I}, \bm{
   \end{bmatrix}\\
 \end{gather}
 \begin{align}
-  \hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}) &= \bm{\mu}_{k}^{O} + \bm{\Sigma}_{k}^{OI}  {\bm{\Sigma}_{k}^{I}}^{-1}  (\bm{x}_{t}^{I} - \bm{\mu}_{k}^{I})\\
-  \hat{\bm{\Sigma}}_{k}^{O} &= \bm{\Sigma}_{k}^{O} - \bm{\Sigma}_{k}^{OI}  {\bm{\Sigma}_{k}^{I}}^{-1} \cdot \bm{\Sigma}_{k}^{IO}
+  \hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}) &= \bm{\mu}_{k}^{O} + \bm{\Sigma}_{k}^{OI}  (\bm{\Sigma}_{k}^{I})^{-1}  (\bm{x}_{t}^{I} - \bm{\mu}_{k}^{I})\\
+  \hat{\bm{\Sigma}}_{k}^{O} &= \bm{\Sigma}_{k}^{O} - \bm{\Sigma}_{k}^{OI}  (\bm{\Sigma}_{k}^{I})^{-1} \cdot \bm{\Sigma}_{k}^{IO}
 \end{align}
 
 The marginal probability $p(\bm{x}_{t}^{I})$ is:
 \begin{equation}
-  p(\bm{x}_{t}^{I}) = \int p(\bm{x}_{t}^{I}, \bm{x}_{t}^{O})d\bm{x}_{t}^{O} = \sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})
+  p(\bm{x}_{t}^{I}) = \int p(\bm{x}_{t}^{I}, \bm{x}_{t}^{O})d\bm{x}_{t}^{O} = \sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})
 \end{equation}
 
 To retrieve the multimodal conditional distribution $p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I})$ for each input/timestep we have:
 \begin{align}
   p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I}) &= \frac{p(\bm{x}_{t}^{O},\bm{x}_{t}^{I})}{p(\bm{x}_{t}^{I})}\\
-  &= \frac{\sum_{k=1}^{K}\textcolor[rgb]{0,0.5,1}{\pi_{k}} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{\mu}_{k}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \textcolor[rgb]{0,0.5,1}{\mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}{\textcolor[rgb]{0,0.5,1}{\sum_{k=1}^{K} \pi_{i} \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}\\
-  &= \sum_{k=1}^{K} \textcolor[rgb]{0,0.5,1}{r_{nk}} \cdot \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{\mu}_{k}^{I}), \hat{\bm{\Sigma}}_{k}^{O})
+  &= \frac{\sum_{k=1}^{K}\textcolor[rgb]{0,0.5,1}{\pi_{k}} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \textcolor[rgb]{0,0.5,1}{\mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}{\textcolor[rgb]{0,0.5,1}{\sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}\\
+  &= \sum_{k=1}^{K} \textcolor[rgb]{0,0.5,1}{r_{nk}} \cdot \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O})
 \end{align}
 
 When a unimodal output distribution is required, the law of total mean and variance can be used to approximate the distribution with the Gaussian (see \Cref{proof:approx-multimod-to-single}):
