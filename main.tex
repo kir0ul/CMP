@@ -260,6 +260,8 @@ Update of the GMM mixture weights:
   \pi_{k}^{new} = \frac{N_{k}}{N}, \quad k=1, \dots, K
 \end{equation}
 
+The parameters are updated using \Cref{algo:EM}.
+
 
 \begin{algorithm}[htbp]
 \caption{\textsc{Expectation Maximization (EM)} algorithm for a Gaussian mixture model}
@@ -300,6 +302,7 @@ Update of the GMM mixture weights:
 
   \BlankLine
   \tcp{Log likelihood}%
+  \vspace{-1.5em}
       \begin{flalign*}%
         &\mathcal{L} \gets \sum^{N}_{n=1} \ln \Bigg\{\sum^{K}_{k=1} \pi_{k}  \mathcal{N}(\bm{\mathrm{x}}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k}) \Bigg\}&
       \end{flalign*}
@@ -308,49 +311,65 @@ Update of the GMM mixture weights:
 \end{algorithm}
 
 \subsection{Gaussian Mixture Regression (GMR)}
-Requires to add a series of timesteps $t = (t_{1}, \dots, t_{j}, \dots, t_{m})$ to divide each demonstration path evenly, and the points of each path can be re-written as $[(t_1, p_1), ..., (t_j, p_j), ..., (t_m, p_m)]$, so that each path has the same number of points for better alignment between demonstrations.
 
-\begin{table}
+At each iteration step $t$, the datapoint $\bm{x}_{t}$ can be decomposed as two subvectors $\bm{x}_{t}^{I}$ and $\bm{x}_{t}^{O}$ spanning for the input and output dimensions. For trajectory encoding in task space, $I$ corresponds to the time input dimension (\eg value of a decay term), and $O$ corresponds to the output dimensions describing a path (\eg end-effector position in task space).
+
+During the training phase we learn the joint probability $p(\bm{x}_{t}^{I}, \bm{x}_{t}^{O})$ with GMM through EM (\Cref{algo:EM}) with:
+\begin{table}[h]
   \centering
   \caption{Notation}
   \begin{tabular}{ll}
     \toprule
-    $p_{j}$ & position of a constructive point from demonstration, $j=1, \dots, m$\\
-     $m$ & total number of points in all the demonstrations\\
-        \bottomrule
+    $\bm{x}_{t} \in \mathbb{R}^{D}$ & datapoint at timestep $t$\\
+    $\bm{\mu}_{k}$ & center of the $k^{\text{th}}$ Gaussian\\
+    $\bm{\Sigma}_{k}$ & covariance of the $k^{\text{th}}$ Gaussian\\
+    \bottomrule
   \end{tabular}
 \end{table}
 
-Joint probability $\mathcal{P}(t, \bm{x})$ learned with GMM:
+\begin{align}
+  p(\bm{x}_{t}^{I}, \bm{x}_{t}^{O}) &=  \sum_{k=1}^{K}\pi_{k} \mathcal{N}_{k}(\bm{x}_{t}^{I}, \bm{x}_{t}^{O}|\bm{\mu}_{k}, \bm{\Sigma}_{k})\\
+  % &= \sum^{K}_{i=1} \pi_{i} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})\\
+  &=  \sum_{k=1}^{K}\pi_{k} p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I}) \cdot p(\bm{x}_{t}^{I})\\
+  &=  \sum_{k=1}^{K}\pi_{k} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{\mu}_{k}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})
+\end{align}
+
 \begin{gather}
-  \mathcal{P}(t_{j}, x_{j}) = \sum^{K}_{i=1} \pi_{i} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})\\
-  \bm{\mu}_{i} =
+  \bm{x}_{t} =
   \begin{bmatrix}
-    \bm{\mu}_{it} \\
-    \bm{\mu}_{ix}
+    \bm{x}_{t}^{I} \\[0.5em]
+    \bm{x}_{t}^{O}
   \end{bmatrix}, \quad
-  \bm{\Sigma}_{i} =
+  \bm{\mu}_{k} =
   \begin{bmatrix}
-    \bm{\Sigma}_{itt} & \bm{\Sigma}_{itx}\\
-    \bm{\Sigma}_{ixt} & \bm{\Sigma}_{ixx}
+    \bm{\mu}_{k}^{I} \\[0.5em]
+    \bm{\mu}_{k}^{O}
+  \end{bmatrix}, \quad
+  \bm{\Sigma}_{k} =
+  \begin{bmatrix}
+    \bm{\Sigma}_{k}^{I} & \bm{\Sigma}_{k}^{IO}\\[0.5em]
+    \bm{\Sigma}_{k}^{OI} & \bm{\Sigma}_{k}^{O}
   \end{bmatrix}\\
 \end{gather}
 \begin{align}
-  m_{i}(t_{j}) &= \bm{\mu}_{ix} + \bm{\Sigma}_{ixt} \cdot \bm{\Sigma}_{itt}^{-1} \cdot (t_{j} - \bm{\mu}_{it})\\
-  cov_{i} &= \bm{\Sigma}_{ixx} - \bm{\Sigma}_{ixt} \cdot \bm{\Sigma}_{itt}^{-1} \cdot \bm{\Sigma}_{itx}
+  \hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}) &= \bm{\mu}_{k}^{O} + \bm{\Sigma}_{k}^{OI}  {\bm{\Sigma}_{k}^{I}}^{-1}  (\bm{x}_{t}^{I} - \bm{\mu}_{k}^{I})\\
+  \hat{\bm{\Sigma}}_{k}^{O} &= \bm{\Sigma}_{k}^{O} - \bm{\Sigma}_{k}^{OI}  {\bm{\Sigma}_{k}^{I}}^{-1} \cdot \bm{\Sigma}_{k}^{IO}
 \end{align}
 
-Marginal probability $P(t_{j})$:
+The marginal probability $p(\bm{x}_{t}^{I})$ is:
 \begin{equation}
-  P(t_{j}) = \int P(t_{j}, x_{j})dx = \sum_{i=1}^{K} \pi_{i} \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})
+  p(\bm{x}_{t}^{I}) = \int p(\bm{x}_{t}^{I}, \bm{x}_{t}^{O})d\bm{x}_{t}^{O} = \sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})
 \end{equation}
-Retrieve the conditional probability $\mathcal{P}(\bm{x}|t)$ with GMR for each timestep:
+
+To retrieve the multimodal conditional distribution $p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I})$ for each input/timestep we have:
 \begin{align}
-  P(x_{j}|t_{j}; m_{i}(t_{j}), cov_{i}) &= \frac{P(t_{j}, x_{j})}{P(t_{j})}\\
-  &= \frac{\sum^{K}_{i=1} \textcolor[rgb]{0,0.5,1}{\pi_{i}} \cdot \mathcal{N}_{i}(x_{j}|t_{j};m_{i}(t_{j}),cov_{i}) \cdot \textcolor[rgb]{0,0.5,1}{\mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})}}{\textcolor[rgb]{0,0.5,1}{\sum_{i=1}^{K} \pi_{i} \cdot \mathcal{N}_{i}(t_{j}|\bm{\mu}_{it}, \bm{\Sigma}_{it})}}\\
-  &= \sum_{i=1}^{K} \textcolor[rgb]{0,0.5,1}{r_{nk}} \cdot \mathcal{N}_{i}(x_{j}|t_{j}; m_{i}(t_{j}), cov_{i})
+  p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I}) &= \frac{p(\bm{x}_{t}^{O},\bm{x}_{t}^{I})}{p(\bm{x}_{t}^{I})}\\
+  &= \frac{\sum_{k=1}^{K}\textcolor[rgb]{0,0.5,1}{\pi_{k}} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{\mu}_{k}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \textcolor[rgb]{0,0.5,1}{\mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}{\textcolor[rgb]{0,0.5,1}{\sum_{k=1}^{K} \pi_{i} \cdot \mathcal{N}_{k}(\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}\\
+  &= \sum_{k=1}^{K} \textcolor[rgb]{0,0.5,1}{r_{nk}} \cdot \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{\mu}_{k}^{I}), \hat{\bm{\Sigma}}_{k}^{O})
 \end{align}
-Regression function (\Cref{eq:GMR:mean}) and conditional variance (\Cref{eq:GMR:var}):
+
+When a unimodal output distribution is required, the law of total mean and variance can be used to approximate the distribution with the Gaussian (see \Cref{proof:approx-multimod-to-single}):
+\todo[inline]{ToDo}
 \begin{align}
   m(x) &= \E(x_{j}|t_{j}) = \sum_{i=1}^{K} r_{nk} \cdot m_{i}(t_{j})\label{eq:GMR:mean}\\
   var(x) &= \sum_{j=1}^{K} r_{nk} \cdot cov_{i}\label{eq:GMR:var}
