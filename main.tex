@@ -158,7 +158,7 @@ See \Cref{proof:conditioning} for the proof.
 
 \begin{proof}[Proof that the posterior mean equals the observed mean]
 \begin{equation}
-  \E[\bm{y}_{t}|\bm{x}_{t}^{\star}] = \bm{\mu}_{\bm{y}_{t}|\bm{x}_{t}^{\star}} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\mu_w} + \textcolor[rgb]{0,0.5,1}{\bm{\Psi}_t^\top} \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
+  \E[\bm{y}_{t}|\bm{x}_{t}^{\star}] = \bm{\mu}_{\bm{y}_{t}|\bm{x}_{t}^{\star}} = \textcolor{blue-eq}{\bm{\Psi}_t^\top} \bm{\mu}_{\bm{w}|\bm{x}_t^\star} = \textcolor{blue-eq}{\bm{\Psi}_t^\top} \bm{\mu_w} + \textcolor{blue-eq}{\bm{\Psi}_t^\top} \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star + \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} (\bm{y}_t^\star - \bm{\Psi}_t^\top \bm{\mu_w})
                           % &\stackrel{?}{=} \bm{y}_t^\star
   \end{equation}
   We set the observed covariance $\bm{\Sigma}_t^\star$ to $0$ so as to have perfect accuracy around our observed position.
@@ -304,7 +304,10 @@ The parameters are updated using \Cref{algo:EM}.
   \tcp{Log likelihood}%
   \vspace{-1.5em}
       \begin{flalign*}%
-        &\mathcal{L} \gets \sum^{N}_{n=1} \ln \Bigg\{\sum^{K}_{k=1} \pi_{k}  \mathcal{N}(\bm{\mathrm{x}}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k}) \Bigg\}&
+        &\mathcal{L} \gets \sum^{N}_{n=1} \ln
+          \begin{bmatrix}
+          \sum^{K}_{k=1} \pi_{k}  \mathcal{N}(\bm{\mathrm{x}}_{n}|\bm{\mu}_{k}, \bm{\Sigma}_{k})
+          \end{bmatrix}&
       \end{flalign*}
 }
 \Return{$\{\bm{\mu}_{k}\}$, $\{\bm{\Sigma}_{k}\}$, $\{\pi_{k}\}$}
@@ -349,7 +352,7 @@ During the training phase we learn the joint probability $p(\bm{x}_{t}^{I}, \bm{
   \begin{bmatrix}
     \bm{\Sigma}_{k}^{I} & \bm{\Sigma}_{k}^{IO}\\[0.5em]
     \bm{\Sigma}_{k}^{OI} & \bm{\Sigma}_{k}^{O}
-  \end{bmatrix}\\
+  \end{bmatrix}
 \end{gather}
 \begin{align}
   \hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}) &= \bm{\mu}_{k}^{O} + \bm{\Sigma}_{k}^{OI}  (\bm{\Sigma}_{k}^{I})^{-1}  (\bm{x}_{t}^{I} - \bm{\mu}_{k}^{I})\\
@@ -364,8 +367,8 @@ The marginal probability $p(\bm{x}_{t}^{I})$ is:
 To retrieve the multimodal conditional distribution $p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I})$ for each input/timestep we have:
 \begin{align}
   p(\bm{x}_{t}^{O}|\bm{x}_{t}^{I}) &= \frac{p(\bm{x}_{t}^{O},\bm{x}_{t}^{I})}{p(\bm{x}_{t}^{I})}\\
-  &= \frac{\sum_{k=1}^{K}\textcolor[rgb]{0,0.5,1}{\pi_{k}} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \textcolor[rgb]{0,0.5,1}{\mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}{\textcolor[rgb]{0,0.5,1}{\sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}\\
-  &= \sum_{k=1}^{K} \textcolor[rgb]{0,0.5,1}{r_{nk}} \cdot \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O})
+  &= \frac{\sum_{k=1}^{K}\textcolor{blue-eq}{\pi_{k}} \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O}) \cdot \textcolor{blue-eq}{\mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}{\textcolor{blue-eq}{\sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}(\bm{x}_{t}^{I}|\bm{\mu}_{k}^{I}, \bm{\Sigma}_{k}^{I})}}\\
+  &= \sum_{k=1}^{K} \textcolor{blue-eq}{r_{nk}} \cdot \mathcal{N}_{k}(\hat{\bm{\mu}}_{k}^{O}(\bm{x}_{t}^{I}), \hat{\bm{\Sigma}}_{k}^{O})
 \end{align}
 
 When a unimodal output distribution is required, the law of total mean and variance can be used to approximate the distribution with the Gaussian (see \Cref{proof:approx-multimod-to-single}):
@@ -385,6 +388,82 @@ The main issue with stitching is the smoothness of the mean and covariance betwe
   \caption{Stitching three ProMPs.}
   \label{fig:stitching}
 \end{figure}
+
+
+\subsection{Mixture of ProMPs}
+\subsubsection{Hierarchical Bayesian Model}
+
+\begin{table}
+  \centering
+  \caption{Notation}
+  \begin{tabular}{ll}
+    \toprule
+    $\bm{t} = [t_{1}, \dots, t_{m}]$ & timestep vector\\
+    $\bm{\mu}_{kt}$ & mean of $t_{i}$ for the $k^{\text{th}}$ Gaussian cluster\\
+     $h_{k}(t_{i})$ & responsibility of the $k^{\text{th}}$ mixture component at timestep $t_{i}$\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Learn the joint distribution $p(t_{i}, y_{i})$ as a mixture of ProMPs, and retrieve the conditional distribution $p(y_{i}|t_{i})$ for each timestep $t_{i}$.
+\begin{equation}
+  p(t_{i}, y_{i}) = \sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}\big( y_{i}|t_{i}; \hat{\bm{\mu}}_{k}(t_{i}), \hat{\bm{\Sigma}}_{k} \big) \cdot \mathcal{N}_{k} \big( t_{i}|\mu_{kt}, \bm{\Sigma}_{kt} \big)
+\end{equation}
+
+\begin{gather}
+  \bm{x}_{t} =
+  \begin{bmatrix}
+    \bm{t} \\[0.5em]
+    \bm{y}_{t}
+  \end{bmatrix}, \quad
+  \bm{\mu}_{k} =
+  \begin{bmatrix}
+    \bm{\mu}_{kt} \\[0.5em]
+    \bm{\mu}_{ky}
+  \end{bmatrix} =
+  \textcolor{magenta-soft}{
+  \begin{bmatrix}
+    \cdot \\[0.5em]
+    \bm{\Psi}^\top_t \bm{\mu_w}
+  \end{bmatrix}}, \quad
+  \bm{\Sigma}_{k} =
+  \begin{bmatrix}
+    \bm{\Sigma}_{ktt} & \bm{\Sigma}_{kty}\\[0.5em]
+    \bm{\Sigma}_{kyt} & \bm{\Sigma}_{kyy}
+  \end{bmatrix} =
+  \textcolor{magenta-soft}{
+  \begin{bmatrix}
+    \cdot & \cdot\\[0.5em]
+    \cdot & \bm{\Psi}^\top_{t} \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y
+  \end{bmatrix}
+  }
+\end{gather}
+
+\begin{align}
+  \hat{\bm{\mu}}_{k}(t_{i}) &= \bm{\mu}_{ky} + \bm{\Sigma}_{kyt}\bm{\Sigma}_{ktt}^{-1}(t_{i} - \bm{\mu}_{kt})\\
+  \hat{\bm{\Sigma}}_{k} &= \bm{\Sigma}_{kyy} - \bm{\Sigma}_{kyt}\bm{\Sigma}_{ktt}^{-1}\bm{\Sigma}_{kty}
+\end{align}
+
+Marginal probability $p(t_{i})$:
+\begin{equation}
+  p(t_{i}) = \int p(t_{i}, y_{i})dy = \sum_{k=1}^{K} \pi_{k} \mathcal{N}_{k}(t_{i}| \bm{\mu}_{kt}, \bm{\Sigma}_{kt})
+\end{equation}
+
+Conditional probability $p\big(y_{i}|t_{i}; \hat{\bm{\mu}}_{k}(t_{i}), \hat{\bm{\Sigma}}_{k}\big)$:
+\begin{align}
+  p\big(y_{i}|t_{i}; \hat{\bm{\mu}}_{k}(t_{i}), \hat{\bm{\Sigma}}_{k}\big) &= \frac{p(t_{i}, y_{i})}{p(t_{i})}\\
+  &= \frac{\sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}\big( y_{i}|t_{i}; \hat{\bm{\mu}}_{k}(t_{i}), \hat{\bm{\Sigma}}_{k}) \cdot \mathcal{N}_{k} \big( t_{i}|\mu_{kt}, \bm{\Sigma}_{kt} \big)}{\sum_{k=1}^{K} \pi_{k} \mathcal{N}_{k} \big(t_{i}| \bm{\mu}_{kt}, \bm{\Sigma}_{kt} \big)}\\
+  &= \sum_{k=1}^{K} h_{k}(t_{i})\mathcal{N}_{k}\big( y_{i}|t_{i}; \hat{\bm{\mu}}_{k}(t_{i}), \hat{\bm{\Sigma}}_{k})
+\end{align}
+with:
+\begin{equation}
+  h_{k}(t_{i}) = \frac{\pi_{k} \mathcal{N}_{k} \big( t_{i}|\mu_{kt}, \bm{\Sigma}_{kt} \big)}{\sum_{k=1}^{K} \pi_{k} \mathcal{N}_{k} \big(t_{i}| \bm{\mu}_{kt}, \bm{\Sigma}_{kt} \big)}
+\end{equation}
+
+
+\subsubsection{Via-Points Modulation}
+\todo[inline]{ToDo}
+
 
 \subsection{Piecewise Gaussian Process}
 
@@ -532,6 +611,13 @@ Using \Cref{eq:cond-multi-gauss-sigma} we get:
 \begin{equation}
 \bm{\Sigma}_{\bm{w}|\bm{x}_t^\star} = \bm{\Sigma_w} - \bm{\Sigma_w}\bm{\Psi}_t \Big(\bm{\Sigma}_t^\star +  \bm{\Psi}_t^\top \bm{\Sigma_w}\bm{\Psi}_t \Big)^{-1} \bm{\Psi}_t^\top \bm{\Sigma_w}
 \end{equation}
+\end{proof}
+
+
+\section{Gaussian mixture regression approximated by a single normal distribution}
+\begin{proof}[Proof of \Cref{eq:mu-cond-new} and \Cref{eq:sigma-cond-new}]\label{proof:approx-multimod-to-single}
+  From \citep{calinon_tutorial_2016}, we have:
+  \todo[inline]{ToDo}
 \end{proof}
 
 
