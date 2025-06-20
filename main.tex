@@ -399,8 +399,8 @@ The main issue with stitching is the smoothness of the mean and covariance betwe
   \begin{tabular}{ll}
     \toprule
     $\bm{t} = [t_{1}, \dots, t_{m}]$ & timestep vector\\
-    $\bm{\mu}_{kt}$ & mean of $t_{i}$ for the $k^{\text{th}}$ Gaussian cluster\\
-     $h_{k}(t_{i})$ & responsibility of the $k^{\text{th}}$ mixture component at timestep $t_{i}$\\
+    $\bm{\mu}_{kt}$ & mean of $t_{i}$ for the $k^{\text{th}}$ ProMP\\
+     $h_{k}(t_{i})$ & responsibility of the $k^{\text{th}}$ ProMP at timestep $t_{i}$\\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -410,34 +410,46 @@ Learn the joint distribution $p(t_{i}, y_{i})$ as a mixture of ProMPs, and retri
   p(t_{i}, y_{i}) = \sum_{k=1}^{K} \pi_{k} \cdot \mathcal{N}_{k}\big( y_{i}|t_{i}; \hat{\bm{\mu}}_{k}(t_{i}), \hat{\bm{\Sigma}}_{k} \big) \cdot \mathcal{N}_{k} \big( t_{i}|\mu_{kt}, \bm{\Sigma}_{kt} \big)
 \end{equation}
 
-\begin{gather}
-  \bm{x}_{t} =
+\begin{equation}
   \begin{bmatrix}
-    \bm{t} \\[0.5em]
-    \bm{y}_{t}
-  \end{bmatrix}, \quad
-  \bm{\mu}_{k} =
+    \bm{t}\\
+    \bm{y}_t
+  \end{bmatrix} \sim \mathcal{N}\Bigg(
   \begin{bmatrix}
     \bm{\mu}_{kt} \\[0.5em]
     \bm{\mu}_{ky}
-  \end{bmatrix} =
-  \textcolor{magenta-soft}{
-  \begin{bmatrix}
-    \cdot \\[0.5em]
-    \bm{\Psi}^\top_t \bm{\mu_w}
-  \end{bmatrix}}, \quad
-  \bm{\Sigma}_{k} =
+  \end{bmatrix},
   \begin{bmatrix}
     \bm{\Sigma}_{ktt} & \bm{\Sigma}_{kty}\\[0.5em]
     \bm{\Sigma}_{kyt} & \bm{\Sigma}_{kyy}
-  \end{bmatrix} =
+  \end{bmatrix}
+  \Bigg)
+\end{equation}
+
+\begin{equation}
+  \begin{bmatrix}
+    \bm{t}\\
+    \bm{y}_t
+  \end{bmatrix} \sim \mathcal{N}\Bigg(
   \textcolor{magenta-soft}{
   \begin{bmatrix}
-    \cdot & \cdot\\[0.5em]
-    \cdot & \bm{\Psi}^\top_{t} \bm{\Sigma_w} \bm{\Psi}_t + \bm{\Sigma}_y
+    \bm{\mu}_{kt} \\[0.5em]
+    \bm{\Psi}^\top_{tk} \bm{\mu}_{\bm{w}k}
+  \end{bmatrix}}, \quad
+  \textcolor{magenta-soft}{
+  \begin{bmatrix}
+    \bm{\Sigma}_{ktt} & \mathrm{Cov}(\bm{t}, \bm{y}_{t})\\[0.5em]
+    \mathrm{Cov}(\bm{y}_{t}, \bm{t}) & \bm{\Psi}^\top_{tk} \bm{\Sigma}_{\bm{w}k} \bm{\Psi}_{tk} + \bm{\Sigma}_{yk}
   \end{bmatrix}
   }
-\end{gather}
+  \Bigg)
+\end{equation}
+
+\begin{equation}
+  \textcolor{magenta-soft}{
+  \mathrm{Cov}(\bm{y}_{t}, \bm{t}) = ?
+  }
+\end{equation}
 
 \begin{align}
   \hat{\bm{\mu}}_{k}(t_{i}) &= \bm{\mu}_{ky} + \bm{\Sigma}_{kyt}\bm{\Sigma}_{ktt}^{-1}(t_{i} - \bm{\mu}_{kt})\\
